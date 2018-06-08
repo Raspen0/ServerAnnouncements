@@ -26,7 +26,7 @@ public class BukkitActionBarHandler extends ActionBarHandler{
         PacketContainer packet = new PacketContainer(PacketType.Play.Server.CHAT);
         packet.getChatTypes().write(0, EnumWrappers.ChatType.GAME_INFO);
         packet.getChatComponents().write(0, WrappedChatComponent.fromText(plugin.getLangHandler()
-                .getMessage("noticeHotBar").replace("{0}", count)));
+                .getMessage(player, "noticeHotBar").replace("{0}", count)));
         try {
             manager.sendServerPacket(player, packet);
         } catch (InvocationTargetException e) {

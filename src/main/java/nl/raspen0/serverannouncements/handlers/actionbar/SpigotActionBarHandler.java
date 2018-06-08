@@ -16,6 +16,7 @@ public class SpigotActionBarHandler extends ActionBarHandler{
 
     @Override
     void doActionBarTask(Player player, String count) {
-        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(plugin.getLangHandler().getMessage("noticeHotBar").replace("{0}", count)));
+        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(plugin.getLangHandler()
+                .getMessage(player, "noticeHotBar").replace("{0}", count)));
     }
 }

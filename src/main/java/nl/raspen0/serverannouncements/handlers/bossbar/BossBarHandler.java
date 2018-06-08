@@ -46,7 +46,7 @@ public class BossBarHandler {
             plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "Please increase the delay between repeating of the task or decrease the duration of the task!");
             return;
         }
-        BossBar bar = Bukkit.createBossBar(plugin.getLangHandler().getMessage("noticeBossBar").replace("{0}", count), color, BarStyle.SEGMENTED_10);
+        BossBar bar = Bukkit.createBossBar(plugin.getLangHandler().getMessage(player, "noticeBossBar").replace("{0}", count), color, BarStyle.SEGMENTED_10);
         bar.addPlayer(player);
         int timerDuration = duration / 10;
         plugin.getPlayerHandler().getPlayer(player.getUniqueId()).setBossbarTask(plugin.getServer().getScheduler().runTaskTimer(plugin, () -> {

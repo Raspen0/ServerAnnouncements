@@ -107,7 +107,7 @@ public class ServerAnnouncements extends JavaPlugin {
     }
 
     public void reloadData(CommandSender sender){
-        sender.sendMessage(getLangHandler().getMessage("announceReload"));
+        sender.sendMessage(getLangHandler().getMessage(sender, "announceReload"));
         getAnnouncementHandler().reloadAnnouncements();
         getPlayerHandler().unloadPlayers();
         for(Player player : getServer().getOnlinePlayers()){
@@ -116,6 +116,6 @@ public class ServerAnnouncements extends JavaPlugin {
                 getTaskHandler().startTasks(player, data, data.getCount());
             });
         }
-        sender.sendMessage(getLangHandler().getMessage("announceReloaded"));
+        sender.sendMessage(getLangHandler().getMessage(sender, "announceReloaded"));
     }
 }

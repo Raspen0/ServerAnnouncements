@@ -18,10 +18,10 @@ public class ChatHandler {
     public int startChatTask(Player player, String count){
         if(repeat > 0){
             return plugin.getServer().getScheduler().runTaskTimer(plugin, () -> player.sendMessage(
-                    plugin.getLangHandler().getMessage("noticeChat").replace("{0}", count)), delay * 20, repeat * 20).getTaskId();
+                    plugin.getLangHandler().getMessage(player, "noticeChat").replace("{0}", count)), delay * 20, repeat * 20).getTaskId();
         } else {
             return plugin.getServer().getScheduler().runTaskLater(plugin, () -> player.sendMessage(
-                    plugin.getLangHandler().getMessage("noticeChat").replace("{0}", count)), delay * 20).getTaskId();
+                    plugin.getLangHandler().getMessage(player, "noticeChat").replace("{0}", count)), delay * 20).getTaskId();
         }
     }
 }

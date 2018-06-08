@@ -43,15 +43,15 @@ public class AnnouncementCommand implements CommandExecutor {
                         continue;
                     }
                     if(count == 0){
-                        player.sendMessage(plugin.getLangHandler().getMessage("announceHeader"));
+                        player.sendMessage(plugin.getLangHandler().getMessage(player, "announceHeader"));
                     }
                     count++;
                     sendMessage(player, "- " + map.get(ID).getText());
                 }
                 if(count == 0){
-                    player.sendMessage(plugin.getLangHandler().getMessage("announceEmpty"));
+                    player.sendMessage(plugin.getLangHandler().getMessage(player, "announceEmpty"));
                 } else {
-                    player.sendMessage(plugin.getLangHandler().getMessage("announceFooter"));
+                    player.sendMessage(plugin.getLangHandler().getMessage(player, "announceFooter"));
                 }
                 return true;
             } else {
@@ -61,7 +61,7 @@ public class AnnouncementCommand implements CommandExecutor {
                     }
                     Player player = (Player) sender;
                     plugin.getPlayerHandler().setReadAnnouncements(player);
-                    player.sendMessage(plugin.getLangHandler().getMessage("announceClear"));
+                    player.sendMessage(plugin.getLangHandler().getMessage(player, "announceClear"));
                     return true;
                 }
 

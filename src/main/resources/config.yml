@@ -1,18 +1,47 @@
+# Settings relating to the unread announcement notifications.
 notification:
   chat:
+     # Toggles the chat notification.
      enabled: true
-     #Delay after joining
+     # How long to wait after the player joins to display the notification.
      delay: 20
-     #Repeat after first run, 0 to disable.
+     # How long to wait to repeat after the first run. (0 to only display it once).
      repeat: 300
   bossbar:
+     # Toggles the BossBar notification.
      enabled: true
+     # How long to wait after the player joins to display the notification.
      delay: 1
+     # How long to wait to repeat after the first run. (0 to only display it once).
      repeat: 60
+     # How long the BossBar should be displayed.
      duration: 15
+     #The color of the BossBar (Valid colors: pink, blue, red, green, yellow, purple, white)
      color: blue
   actionbar:
+     # Toggles the ActionBar notification.
      enabled: true
+     # How long to wait after the player joins to display the notification.
      delay: 1
+     # How long to wait to repeat after the first run. (0 to only display it once).
      repeat: 60
+     # How long the ActionBar notification should be displayed.
      duration: 10
+
+# Language settings.
+language:
+  # Toggles multiLanguage mode.
+  # This allows players to get notifications in different languages based on the permissions they have.
+  # For example: serverann.language.nl will give the player dutch notifications.
+  multiLanguage: false
+  # The languages that should be loaded.
+  # If multiLanguages is disabled, only the first language is loaded.
+  # Valid entries: en (English), nl (Dutch).
+  languages:
+   - en
+   - nl
+
+# Shows the last run version of ServerAnnouncements.
+# This value is used to determine if the config needs to be updated.
+# Changing this can lead to config corruption.
+lastVersion: 1.0
