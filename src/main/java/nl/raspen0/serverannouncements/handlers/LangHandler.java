@@ -23,7 +23,7 @@ public class LangHandler {
 
     public LangHandler(ServerAnnouncements plugin){
         this.plugin = plugin;
-        multiLanguage = plugin.getConfig().getBoolean("language.multilanguage");
+        multiLanguage = plugin.getConfig().getBoolean("language.multiLanguage");
         loadMessages();
     }
 
@@ -36,6 +36,7 @@ public class LangHandler {
                 return lang;
             }
         }
+        System.out.println("No Lang!");
         return loadedLangs.get(0);
     }
 

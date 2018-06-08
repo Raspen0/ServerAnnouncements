@@ -8,3 +8,7 @@ commands:
       description: Announcements
       aliases: ann
       usage: /announcements
+permissions:
+   serverann.lang.*:
+      description: Language permissions
+      default: false

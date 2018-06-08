@@ -24,6 +24,4 @@ public class TaskHandler {
         }
         plugin.getServer().getScheduler().runTask(plugin, () -> plugin.getPlayerHandler().addPlayer(player.getUniqueId(), data));
     }
-
-
 }
