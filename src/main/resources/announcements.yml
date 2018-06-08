@@ -1,0 +1,4 @@
+message1:
+  text: Example Message
+  id: 0
+  permission: example.permission

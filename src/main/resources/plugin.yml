@@ -1,0 +1,10 @@
+name: ServerAnnouncements
+author: raspen0
+main: nl.raspen0.serverannouncements.ServerAnnouncements
+version: ${project.version}
+softdepend: [PlaceholderAPI, ProtocolLib]
+commands:
+   announcements:
+      description: Announcements
+      aliases: ann
+      usage: /announcements
