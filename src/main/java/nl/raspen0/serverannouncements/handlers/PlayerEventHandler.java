@@ -19,18 +19,15 @@ public class PlayerEventHandler implements Listener {
     public void playerJoin(PlayerJoinEvent e){
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
             PlayerData data = plugin.getPlayerHandler().loadPlayer(e.getPlayer());
-            final int count = data.getCount();
-            if(count == 0){
-                return;
-            }
-            if (count > 0) {
-                plugin.getTaskHandler().startTasks(e.getPlayer(), data, count);
+            if (data.getUnreadCount() > 0) {
+                new TaskHandler().startTasks(e.getPlayer(), data, plugin);
             }
         });
     }
 
     @EventHandler
-    public void playerLeave(PlayerQuitEvent event){
-        plugin.getPlayerHandler().unloadPlayer(event.getPlayer().getUniqueId());
+    public void playerLeave(PlayerQuitEvent event) {
+        plugin.getAnnouncementCreator().removePlayer(event.getPlayer().getUniqueId());
+        new TaskHandler().unloadPlayer(event.getPlayer(), plugin);
     }
 }

@@ -2,16 +2,12 @@ package nl.raspen0.serverannouncements;
 
 import org.bukkit.Bukkit;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class PlayerData {
 
     private List<Integer> tasks;
     private List<Integer> readAnnouncements;
-    private int actionbarTimer;
-    private int actionbarTask;
-    private int bossbarTask;
     private int count;
 
     public PlayerData(List<Integer> readAnnouncements, int count){
@@ -19,8 +15,16 @@ public class PlayerData {
         this.count = count;
     }
 
-    public int getCount() {
+    public int getUnreadCount() {
         return count;
+    }
+
+    public void increaseUnreadCount(){
+        count++;
+    }
+
+    public void decreaseUnreadCount(){
+        count--;
     }
 
     public List<Integer> getReadAnnouncements() {
@@ -31,46 +35,12 @@ public class PlayerData {
         readAnnouncements = list;
     }
 
-    public int getActionbarTimer() {
-        return actionbarTimer;
+    public void removeReadAnnouncement(int id){
+        readAnnouncements.remove(Integer.valueOf(id));
     }
 
-    public void clearActionbarTimer(){
-        Bukkit.getServer().getScheduler().cancelTask(actionbarTask);
-        actionbarTimer = 0;
-        actionbarTask = 0;
-    }
-
-    public void increaseActionbarTimer() {
-        actionbarTimer++;
-    }
-
-    public int getActionbarTask() {
-        return actionbarTask;
-    }
-
-    public void setActionbarTask(int actionbarTask) {
-        this.actionbarTask = actionbarTask;
-    }
-
-    public int getBossbarTask() {
-        return bossbarTask;
-    }
-
-    public void setBossbarTask(int bossbarTask) {
-        this.bossbarTask = bossbarTask;
-    }
-
-    public void clearBossbarTask(){
-        Bukkit.getServer().getScheduler().cancelTask(bossbarTask);
-        bossbarTask = 0;
-    }
-
-    public void addTask(int task){
-        if(tasks == null){
-            tasks = new ArrayList<>();
-        }
-        tasks.add(task);
+    public void setTasks(List<Integer> list){
+        tasks = list;
     }
 
     public void clearTasks(){
@@ -81,7 +51,6 @@ public class PlayerData {
             Bukkit.getServer().getScheduler().cancelTask(i);
         }
         tasks.clear();
-        tasks = null;
     }
 
 }

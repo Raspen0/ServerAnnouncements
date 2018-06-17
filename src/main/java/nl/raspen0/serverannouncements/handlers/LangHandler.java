@@ -5,7 +5,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -36,7 +35,7 @@ public class LangHandler {
                 return lang;
             }
         }
-        System.out.println("No Lang!");
+        plugin.getPluginLogger().logError("Could not find language for " + sender.getName());
         return loadedLangs.get(0);
     }
 
@@ -48,9 +47,24 @@ public class LangHandler {
         try{
             return messages.get(language + ID);
         } catch (NullPointerException e){
-            plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "Could not find language " + language + "!");
+            plugin.getPluginLogger().logError("Could not find language " + language + "!");
             return messages.get("eng" + ID);
         }
+    }
+
+    public void unloadMessages(){
+        messages.clear();
+        messages = null;
+
+        loadedLangs.clear();
+        loadedLangs = null;
+    }
+
+    public void reloadMessages(){
+        messages.clear();
+        loadedLangs.clear();
+        multiLanguage = plugin.getConfig().getBoolean("language.multiLanguage");
+        loadMessages();
     }
 
     private void loadMessages(){
@@ -70,7 +84,7 @@ public class LangHandler {
                 }
                 count++;
             } catch (IOException | InvalidConfigurationException e) {
-                plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "Could not find language " + lang + "!");
+                plugin.getPluginLogger().logError("Could not find language " + lang + "!");
             }
         }
     }

@@ -10,7 +10,7 @@ public class Logger {
         this.plugin = plugin;
     }
 
-    public void logToConsole(String message){
+    public void logMessage(String message){
         plugin.getServer().getConsoleSender().sendMessage(ChatColor.AQUA + "[ServerAnnouncements] " + message);
     }
 

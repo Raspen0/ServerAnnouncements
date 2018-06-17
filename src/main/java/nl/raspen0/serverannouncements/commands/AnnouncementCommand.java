@@ -1,10 +1,14 @@
 package nl.raspen0.serverannouncements.commands;
 
 import me.clip.placeholderapi.PlaceholderAPI;
-import nl.raspen0.serverannouncements.Announcement;
+import nl.raspen0.serverannouncements.commands.admin.*;
+import nl.raspen0.serverannouncements.handlers.announcement.Announcement;
+import nl.raspen0.serverannouncements.PlayerData;
 import nl.raspen0.serverannouncements.ServerAnnouncements;
 import nl.raspen0.serverannouncements.events.AnnouncementSendEvent;
+import nl.raspen0.serverannouncements.handlers.announcement.AnnouncementModifier;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -17,7 +21,7 @@ public class AnnouncementCommand implements CommandExecutor {
 
     private final ServerAnnouncements plugin;
 
-    public AnnouncementCommand(ServerAnnouncements plugin){
+    public AnnouncementCommand(ServerAnnouncements plugin) {
         this.plugin = plugin;
     }
 
@@ -30,7 +34,7 @@ public class AnnouncementCommand implements CommandExecutor {
                 }
                 Player player = (Player) sender;
                 List<Integer> read = plugin.getPlayerHandler().getPlayer(player.getUniqueId()).getReadAnnouncements();
-                if(read == null){
+                if (read == null) {
                     return true;
                 }
                 Map<Integer, Announcement> map = plugin.getAnnouncementHandler().getAnnouncements();
@@ -39,23 +43,23 @@ public class AnnouncementCommand implements CommandExecutor {
                     if (read.contains(ID)) {
                         continue;
                     }
-                    if(!map.get(ID).hasPermission(player)){
+                    if (!map.get(ID).hasPermission(player)) {
                         continue;
                     }
-                    if(count == 0){
+                    if (count == 0) {
                         player.sendMessage(plugin.getLangHandler().getMessage(player, "announceHeader"));
                     }
                     count++;
                     sendMessage(player, "- " + map.get(ID).getText());
                 }
-                if(count == 0){
+                if (count == 0) {
                     player.sendMessage(plugin.getLangHandler().getMessage(player, "announceEmpty"));
                 } else {
                     player.sendMessage(plugin.getLangHandler().getMessage(player, "announceFooter"));
                 }
                 return true;
             } else {
-                if(args[0].equalsIgnoreCase("read")){
+                if (args[0].equalsIgnoreCase("read")) {
                     if (!(sender instanceof Player)) {
                         return true;
                     }
@@ -65,22 +69,59 @@ public class AnnouncementCommand implements CommandExecutor {
                     return true;
                 }
 
-                if(args[0].equalsIgnoreCase("reload")){
-                    plugin.reloadData(sender);
+                if (args[0].equalsIgnoreCase("admin")) {
+                    if (!sender.hasPermission("serverann.admin")) {
+                        sender.sendMessage(plugin.getLangHandler().getMessage(sender, "noPerm"));
+                        return true;
+                    }
+                    if (args.length < 2) {
+                        sender.sendMessage(plugin.getLangHandler().getMessage(sender, "notEnoughArgs"));
+                        return true;
+                    }
+                    try{
+                        adminCommandList.valueOf(args[1].toUpperCase()).adminCommand.runCommand(sender, args ,plugin);
+                    } catch (IllegalArgumentException e){
+                        sender.sendMessage(plugin.getLangHandler().getMessage(sender, "adminInvalidArg"));
+                    }
                 }
             }
         }
         return true;
     }
 
-    private void sendMessage(Player player, String message){
+    @SuppressWarnings("unused")
+    private enum adminCommandList{
+        CREATE(new AnnouncementCreate()),
+        DELETE(new AnnouncementDelete()),
+        MODIFY(new AnnouncementModify()),
+        LIST(new AnnouncementList()),
+        SHOW(new AnnouncementPreview()),
+        INFO(new ShowPlayerInfo()),
+        RELOAD(new PluginReload());
+
+        AdminCommand adminCommand;
+
+        adminCommandList(AdminCommand adminCommand){
+            this.adminCommand = adminCommand;
+        }
+    }
+
+    private void sendMessage(Player player, String message) {
         if (plugin.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             message = PlaceholderAPI.setPlaceholders(player, message);
         }
         AnnouncementSendEvent event = new AnnouncementSendEvent(player, message);
         Bukkit.getServer().getPluginManager().callEvent(event);
-        if(!event.isCancelled()) {
+        if (!event.isCancelled()) {
             player.sendMessage(message);
         }
+    }
+}
+
+class AnnouncementDelete implements AdminCommand{
+    @Override
+    public void runCommand(CommandSender sender, String[] args, ServerAnnouncements plugin) {
+        plugin.getAnnouncementHandler().deleteAnnouncement(args[2]);
+        sender.sendMessage(plugin.getLangHandler().getMessage(sender, "adminDeleted"));
     }
 }

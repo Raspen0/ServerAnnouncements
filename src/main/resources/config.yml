@@ -1,5 +1,7 @@
 # Settings relating to the unread announcement notifications.
 notification:
+
+  restartTasksOnUpdate: false
   chat:
      # Toggles the chat notification.
      enabled: true
@@ -28,6 +30,7 @@ notification:
      # How many seconds the ActionBar notification should be displayed.
      duration: 10
 
+
 # Language settings.
 language:
   # Toggles multiLanguage mode.
@@ -38,7 +41,7 @@ language:
   # If multiLanguages is disabled, only the first language is loaded.
   # Valid entries: en (English), nl (Dutch).
   languages:
-   - en
+   - eng
    - nl
 
 # Shows the last run version of ServerAnnouncements.

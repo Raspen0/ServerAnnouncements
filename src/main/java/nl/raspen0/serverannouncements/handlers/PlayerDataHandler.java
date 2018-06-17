@@ -54,14 +54,31 @@ public class PlayerDataHandler {
     }
 
     void unloadPlayer(UUID uuid){
-        players.get(uuid).clearTasks();
-        players.get(uuid).clearActionbarTimer();
-        players.get(uuid).clearBossbarTask();
-        players.remove(uuid);
+        if(players.containsKey(uuid)) {
+            players.get(uuid).clearTasks();
+            players.remove(uuid);
+        }
     }
 
     public void unloadPlayers(){
         players.clear();
+    }
+
+    public void removeReadAnnouncement(int id){
+        FileConfiguration file = loadDataFile();
+        for(String uuid : file.getKeys(false)) {
+            List<Integer> list = file.getIntegerList(uuid + ".read");
+            if (list.contains(id)) {
+                list.remove(id);
+                file.set(uuid + ".read", list);
+            }
+        }
+        try {
+            file.save(new File(plugin.getDataFolder() + File.separator + "data.yml"));
+        } catch (IOException e) {
+            plugin.getPluginLogger().logError("Could not save playerdata to file!");
+            e.printStackTrace();
+        }
     }
 
     private FileConfiguration loadDataFile(){
@@ -70,6 +87,7 @@ public class PlayerDataHandler {
             try {
                 file.createNewFile();
             } catch (IOException e) {
+                plugin.getPluginLogger().logError("Could not create data.yml!");
                 e.printStackTrace();
             }
         }
@@ -93,6 +111,7 @@ public class PlayerDataHandler {
             try {
                 file.save(new File(plugin.getDataFolder() + File.separator + "data.yml"));
             } catch (IOException e) {
+                plugin.getPluginLogger().logError("Could not save playerdata to file!");
                 e.printStackTrace();
             }
         });

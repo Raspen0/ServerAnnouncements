@@ -1,24 +1,29 @@
 package nl.raspen0.serverannouncements;
 
+import nl.raspen0.serverannouncements.commands.AnnTabComplete;
+import nl.raspen0.serverannouncements.commands.AnnouncementCommand;
+import nl.raspen0.serverannouncements.handlers.LangHandler;
+import nl.raspen0.serverannouncements.handlers.PlayerDataHandler;
+import nl.raspen0.serverannouncements.handlers.PlayerEventHandler;
 import nl.raspen0.serverannouncements.handlers.actionbar.ActionBarHandler;
 import nl.raspen0.serverannouncements.handlers.actionbar.BukkitActionBarHandler;
 import nl.raspen0.serverannouncements.handlers.actionbar.SpigotActionBarHandler;
+import nl.raspen0.serverannouncements.handlers.announcement.AnnouncementHandler;
+import nl.raspen0.serverannouncements.handlers.announcement.MessageCreator;
 import nl.raspen0.serverannouncements.handlers.bossbar.BossBarHandler;
 import nl.raspen0.serverannouncements.handlers.chat.ChatHandler;
-import nl.raspen0.serverannouncements.commands.AnnouncementCommand;
-import nl.raspen0.serverannouncements.handlers.*;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class ServerAnnouncements extends JavaPlugin {
 
+    private boolean restartTasksOnUpdate = false;
+
     private LangHandler langHandler;
     private AnnouncementHandler announcementHandler;
-    private TaskHandler taskHandler;
     private PlayerDataHandler playerHandler;
+    private Logger logger;
+    private MessageCreator creator;
 
     private ChatHandler chatHandler;
     private ActionBarHandler actionBarHandler;
@@ -27,27 +32,41 @@ public class ServerAnnouncements extends JavaPlugin {
     @Override
     public void onEnable(){
         saveDefaultConfig();
+        logger = new Logger(this);
+
         langHandler = new LangHandler(this);
         announcementHandler = new AnnouncementHandler(this);
         loadHandlers();
-        taskHandler = new TaskHandler(this);
         playerHandler = new PlayerDataHandler(this);
+        creator = new MessageCreator(this);
+
+        restartTasksOnUpdate = getConfig().getBoolean("restartTasksOnUpdate");
 
         getCommand("announcements").setExecutor(new AnnouncementCommand(this));
+        getCommand("announcements").setTabCompleter(new AnnTabComplete());
         getServer().getPluginManager().registerEvents(new PlayerEventHandler(this), this);
+        getServer().getPluginManager().registerEvents(creator, this);
     }
 
     @Override
     public void onDisable(){
+        getAnnouncementCreator().removePlayers();
         getPlayerHandler().unloadPlayers();
+        if(actionBarHandler != null) {
+            getActionBarHandler().unloadPlayers();
+        }
+        if(bossBarHandler != null) {
+            getBossBarHandler().unloadPlayers();
+        }
+        getLangHandler().unloadMessages();
+    }
+
+    public Logger getPluginLogger() {
+        return logger;
     }
 
     public LangHandler getLangHandler() {
         return langHandler;
-    }
-
-    public TaskHandler getTaskHandler() {
-        return taskHandler;
     }
 
     public PlayerDataHandler getPlayerHandler() {
@@ -56,6 +75,14 @@ public class ServerAnnouncements extends JavaPlugin {
 
     public AnnouncementHandler getAnnouncementHandler() {
         return announcementHandler;
+    }
+
+    public MessageCreator getAnnouncementCreator() {
+        return creator;
+    }
+
+    public boolean shouldRestartTasksOnUpdate() {
+        return restartTasksOnUpdate;
     }
 
     public boolean isChatEnabled(){
@@ -92,30 +119,17 @@ public class ServerAnnouncements extends JavaPlugin {
         if(getConfig().getBoolean("notification.actionbar.enabled")) {
             try {
                 Class.forName("org.spigotmc.SpigotConfig");
-                Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "Spigot detected, using SpigotAPI!");
+                getPluginLogger().logMessage("Spigot detected, using SpigotAPI!");
                 actionBarHandler = new SpigotActionBarHandler(this);
             } catch (Throwable tr) {
-                Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "Bukkit detected!");
+                getPluginLogger().logMessage(ChatColor.AQUA + "Bukkit detected!");
                 if (!getServer().getPluginManager().isPluginEnabled("ProtocolLib")) {
-                    Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "ProtocolLib missing!, ActionBar functionality disabled.");
+                    getPluginLogger().logError("ProtocolLib missing!, ActionBar functionality disabled.");
                     return;
                 }
-                Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "ProtocolLib detected, using ProtocolLibAPI!");
+                getPluginLogger().logMessage("ProtocolLib detected, using ProtocolLibAPI!");
                 actionBarHandler = new BukkitActionBarHandler(this);
             }
         }
-    }
-
-    public void reloadData(CommandSender sender){
-        sender.sendMessage(getLangHandler().getMessage(sender, "announceReload"));
-        getAnnouncementHandler().reloadAnnouncements();
-        getPlayerHandler().unloadPlayers();
-        for(Player player : getServer().getOnlinePlayers()){
-            getServer().getScheduler().runTaskAsynchronously(this, () -> {
-                PlayerData data = getPlayerHandler().loadPlayer(player);
-                getTaskHandler().startTasks(player, data, data.getCount());
-            });
-        }
-        sender.sendMessage(getLangHandler().getMessage(sender, "announceReloaded"));
     }
 }
