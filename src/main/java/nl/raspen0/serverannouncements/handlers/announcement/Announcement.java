@@ -1,36 +1,55 @@
 package nl.raspen0.serverannouncements.handlers.announcement;
 
-import nl.raspen0.serverannouncements.handlers.announcement.MessageCreator;
 import org.bukkit.entity.Player;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 public class Announcement {
 
     private final String text;
     private final String permission;
-    private final String title;
+  //  private final String title;
+    private final LocalDate date;
 
     Announcement(AnnouncementBuilder builder) {
         this.text = builder.text;
         this.permission = builder.permission;
-        this.title = builder.title;
+ //       this.title = builder.title;
+        this.date = builder.date;
     }
 
-    public Announcement(String title, String text, String permission) {
+    public Announcement(String text, LocalDate date, String permission) {
         this.text = text;
         this.permission = permission;
-        this.title = title;
+  //      this.title = title;
+        this.date = date;
     }
 
-    public String getTitle() {
-        return title;
-    }
+//    public String getTitle() {
+//        return title;
+//    }
 
     public String getText() {
         return text;
     }
 
-    public String getPermission() {
+    String getPermission() {
         return permission;
+    }
+
+    LocalDate getRawDate(){
+        return date;
+    }
+
+    public String getDate(String locale) {
+        String pattern = "dd-MMM";
+        if(date.getYear() != LocalDate.now().getYear()){
+            pattern = "dd-MMM-yyyy";
+        }
+        DateTimeFormatter format = DateTimeFormatter.ofPattern(pattern).withLocale(new Locale(locale));
+        return date.format(format);
     }
 
     public boolean hasPermission(Player player) {
@@ -40,41 +59,42 @@ public class Announcement {
         return player.hasPermission(permission);
     }
 
-    public static class AnnouncementBuilder {
-
+    static class AnnouncementBuilder {
         private String title;
         private MessageCreator.creatorState state;
         private String text;
         private String permission;
+        private LocalDate date;
 
-        public AnnouncementBuilder(){
+        AnnouncementBuilder(){
             this.state = MessageCreator.creatorState.TITLE;
+            date = LocalDate.now();
         }
 
-        public void setPermission(String permission) {
+        void setPermission(String permission) {
             this.permission = permission;
         }
 
-        public void setTitle(String title) {
+        void setTitle(String title) {
             this.title = title;
             state = MessageCreator.creatorState.TEXT;
         }
 
-        public void setText(String text) {
+        String getText() {
+            return text;
+        }
+
+        void setText(String text) {
             this.text = text;
             state = MessageCreator.creatorState.PERMISSION;
         }
 
-        public String getTitle() {
+        String getTitle() {
             return title;
         }
 
-        public MessageCreator.creatorState getState() {
+        MessageCreator.creatorState getState() {
             return state;
-        }
-
-        public void setState(MessageCreator.creatorState state) {
-            this.state = state;
         }
     }
 }

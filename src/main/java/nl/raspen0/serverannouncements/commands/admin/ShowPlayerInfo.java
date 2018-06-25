@@ -7,10 +7,16 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Map;
+
 public class ShowPlayerInfo implements AdminCommand{
 
     @Override
     public void runCommand(CommandSender sender, String[] args, ServerAnnouncements plugin) {
+        if(!sender.hasPermission("serverann.admin.info")){
+            sender.sendMessage(plugin.getLangHandler().getMessage(sender, "noPerm"));
+            return;
+        }
         if (args.length < 3) {
             //Not enough args
             sender.sendMessage(plugin.getLangHandler().getMessage(sender, "notEnoughArgs"));
@@ -30,13 +36,17 @@ public class ShowPlayerInfo implements AdminCommand{
         if (data.getReadAnnouncements().isEmpty()) {
             builder.append(ChatColor.YELLOW).append("none");
         } else {
-            for (int i : data.getReadAnnouncements()) {
-                System.out.println(i);
-                if (builder.length() == 2) {
-                    builder.append(ChatColor.YELLOW).append(i);
+            for (Map.Entry e : plugin.getAnnouncementHandler().getLoadedAnnouncements().entrySet()){
+                String title = (String) e.getKey();
+                int ID = (int) e.getValue();
+                if(!data.getReadAnnouncements().contains(ID)){
                     continue;
                 }
-                builder.append(ChatColor.AQUA).append(", ").append(ChatColor.YELLOW).append(i);
+                if (builder.length() == 2) {
+                    builder.append(ChatColor.YELLOW).append(title);
+                    continue;
+                }
+                builder.append(ChatColor.AQUA).append(", ").append(ChatColor.YELLOW).append(title);
             }
         }
         sender.sendMessage(builder.toString());

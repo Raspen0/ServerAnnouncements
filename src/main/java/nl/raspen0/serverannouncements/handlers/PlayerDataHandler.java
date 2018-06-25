@@ -27,6 +27,10 @@ public class PlayerDataHandler {
         players.put(uuid, data);
     }
 
+    public Map<UUID, PlayerData> getPlayers(){
+        return players;
+    }
+
     public PlayerData loadPlayer(Player player){
         UUID uuid = player.getUniqueId();
         FileConfiguration file = loadDataFile();
@@ -61,7 +65,9 @@ public class PlayerDataHandler {
     }
 
     public void unloadPlayers(){
-        players.clear();
+        for(UUID uuid : players.keySet()){
+            unloadPlayer(uuid);
+        }
     }
 
     public void removeReadAnnouncement(int id){
@@ -94,26 +100,43 @@ public class PlayerDataHandler {
         return YamlConfiguration.loadConfiguration(file);
     }
 
-    public void setReadAnnouncements(Player player){
-        FileConfiguration file = loadDataFile();
-        List<Integer> list = new ArrayList<>();
-        for(int id : plugin.getAnnouncementHandler().getAnnouncements().keySet()){
-            if(!plugin.getAnnouncementHandler().getAnnouncement(id).hasPermission(player)){
-                continue;
-            }
-            list.add(id);
-        }
-        UUID uuid = player.getUniqueId();
-        getPlayer(uuid).setReadAnnouncement(list);
-        getPlayer(uuid).clearTasks();
-        file.set(uuid.toString() + ".read", list);
+    public void saveReadAnnouncements(UUID uuid, List<Integer> list){
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
+            FileConfiguration file = loadDataFile();
+            file.set(uuid.toString(), list);
             try {
                 file.save(new File(plugin.getDataFolder() + File.separator + "data.yml"));
             } catch (IOException e) {
                 plugin.getPluginLogger().logError("Could not save playerdata to file!");
                 e.printStackTrace();
             }
+        });
+    }
+
+    public void setReadAnnouncements(Player player){
+        UUID uuid = player.getUniqueId();
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
+            FileConfiguration file = loadDataFile();
+            List<Integer> list = new ArrayList<>();
+            for (int id : plugin.getAnnouncementHandler().getAnnouncements().keySet()) {
+                if (!plugin.getAnnouncementHandler().getAnnouncement(id).hasPermission(player)) {
+                    continue;
+                }
+                list.add(id);
+            }
+            file.set(uuid.toString() + ".read", list);
+            plugin.getServer().getScheduler().runTask(plugin, () -> {
+                getPlayer(uuid).setReadAnnouncement(list);
+                getPlayer(uuid).clearTasks();
+                plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
+                    try {
+                        file.save(new File(plugin.getDataFolder() + File.separator + "data.yml"));
+                    } catch (IOException e) {
+                        plugin.getPluginLogger().logError("Could not save playerdata to file!");
+                        e.printStackTrace();
+                    }
+                });
+            });
         });
     }
 }

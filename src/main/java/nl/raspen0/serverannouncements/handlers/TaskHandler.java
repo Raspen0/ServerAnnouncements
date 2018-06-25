@@ -6,7 +6,6 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class TaskHandler {
 
@@ -15,13 +14,19 @@ public class TaskHandler {
             plugin.getPlayerHandler().addPlayer(player.getUniqueId(), data);
             List<Integer> list = new ArrayList<>();
             if (plugin.isChatEnabled()) {
-                list.add(plugin.getChatHandler().startChatTask(player));
+                if(player.hasPermission("serverann.notification.chat")) {
+                    list.add(plugin.getChatHandler().startChatTask(player));
+                }
             }
             if (plugin.isActionBarEnabled()) {
-                list.add(plugin.getActionBarHandler().startActionBarTask(player));
+                if(player.hasPermission("serverann.notification.actionbar")) {
+                    list.add(plugin.getActionBarHandler().startActionBarTask(player));
+                }
             }
             if (plugin.isBossBarEnabled()) {
-                list.add(plugin.getBossBarHandler().startBossBarTask(player));
+                if(player.hasPermission("serverann.notification.bossbar")) {
+                    list.add(plugin.getBossBarHandler().startBossBarTask(player));
+                }
             }
             if(!list.isEmpty()) {
                 plugin.getPlayerHandler().getPlayer(player.getUniqueId()).setTasks(list);
@@ -34,11 +39,11 @@ public class TaskHandler {
             unloadPlayer(player, plugin);
             return;
         }
-        if(plugin.shouldRestartTasksOnUpdate()) {
+        if(plugin.getPluginConfig().restartTasksOnUpdate()) {
             data.clearTasks();
             startTasks(player, data, plugin);
         } else {
-            plugin.getPlayerHandler().addPlayer(player.getUniqueId(), data);
+            plugin.getServer().getScheduler().runTask(plugin, () -> plugin.getPlayerHandler().addPlayer(player.getUniqueId(), data));
         }
     }
 

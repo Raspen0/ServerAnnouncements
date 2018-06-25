@@ -3,6 +3,7 @@ package nl.raspen0.serverannouncements.handlers.announcement;
 import nl.raspen0.serverannouncements.PlayerData;
 import nl.raspen0.serverannouncements.ServerAnnouncements;
 import nl.raspen0.serverannouncements.handlers.TaskHandler;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -51,11 +52,9 @@ public class MessageCreator implements Listener {
         }
         switch (playerMap.get(player.getUniqueId()).getState()){
             case TITLE: {
-                for(Announcement ann : plugin.getAnnouncementHandler().getAnnouncements().values()){
-                    if(ann.getTitle().equals(event.getMessage())){
-                        player.sendMessage("Title is use!");
-                        return;
-                    }
+                if(plugin.getAnnouncementHandler().isAnnouncementLoaded(event.getMessage())){
+                    player.sendMessage(plugin.getLangHandler().getMessage(player, "creatorTitleExists"));
+                    return;
                 }
                 playerMap.get(player.getUniqueId()).setTitle(event.getMessage());
                 player.sendMessage(plugin.getLangHandler().getMessage(player, "creatorText"));
@@ -76,8 +75,10 @@ public class MessageCreator implements Listener {
                 if(!permission.equalsIgnoreCase("none")){
                     ann.setPermission(event.getMessage());
                 }
+                String rawText = ann.getText();
+                ann.setText(ChatColor.translateAlternateColorCodes('&', rawText));
                 Announcement announcement = new Announcement(ann);
-                plugin.getAnnouncementHandler().saveAnnouncement(ann.getTitle(), announcement);
+                plugin.getAnnouncementHandler().saveNewAnnouncement(ann.getTitle(), announcement, rawText);
                 playerMap.remove(player.getUniqueId());
 
                 for(Player p : plugin.getServer().getOnlinePlayers()){
@@ -94,6 +95,7 @@ public class MessageCreator implements Listener {
                         new TaskHandler().reloadPlayer(p, data, plugin);
                     }
                 }
+                player.sendMessage(plugin.getLangHandler().getMessage(player, "creatorFinish"));
             }
         }
     }

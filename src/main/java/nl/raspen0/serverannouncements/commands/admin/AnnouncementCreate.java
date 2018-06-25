@@ -1,7 +1,6 @@
 package nl.raspen0.serverannouncements.commands.admin;
 
 import nl.raspen0.serverannouncements.ServerAnnouncements;
-import nl.raspen0.serverannouncements.handlers.announcement.Announcement;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -10,7 +9,11 @@ public class AnnouncementCreate implements AdminCommand{
     @Override
     public void runCommand(CommandSender sender, String[] args, ServerAnnouncements plugin) {
         if(!(sender instanceof Player)){
-            sender.sendMessage("Only player!");
+            sender.sendMessage(plugin.getLangHandler().getMessage(sender, "OnlyPlayer"));
+            return;
+        }
+        if(!sender.hasPermission("serverann.admin.creator")){
+            sender.sendMessage(plugin.getLangHandler().getMessage(sender, "noPerm"));
             return;
         }
         Player player = (Player) sender;

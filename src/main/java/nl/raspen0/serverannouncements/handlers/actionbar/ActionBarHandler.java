@@ -62,7 +62,6 @@ public abstract class ActionBarHandler {
             UUID uuid = (UUID) e.getKey();
             unloadPlayer(uuid);
         }
-        playerMap = null;
     }
 
     abstract void doActionBarTask(Player player);

@@ -17,8 +17,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class ServerAnnouncements extends JavaPlugin {
 
-    private boolean restartTasksOnUpdate = false;
-
+    private Config config;
     private LangHandler langHandler;
     private AnnouncementHandler announcementHandler;
     private PlayerDataHandler playerHandler;
@@ -32,18 +31,16 @@ public class ServerAnnouncements extends JavaPlugin {
     @Override
     public void onEnable(){
         saveDefaultConfig();
+        loadConfig();
         logger = new Logger(this);
-
         langHandler = new LangHandler(this);
         announcementHandler = new AnnouncementHandler(this);
         loadHandlers();
         playerHandler = new PlayerDataHandler(this);
         creator = new MessageCreator(this);
 
-        restartTasksOnUpdate = getConfig().getBoolean("restartTasksOnUpdate");
-
         getCommand("announcements").setExecutor(new AnnouncementCommand(this));
-        getCommand("announcements").setTabCompleter(new AnnTabComplete());
+        getCommand("announcements").setTabCompleter(new AnnTabComplete(this));
         getServer().getPluginManager().registerEvents(new PlayerEventHandler(this), this);
         getServer().getPluginManager().registerEvents(creator, this);
     }
@@ -81,8 +78,8 @@ public class ServerAnnouncements extends JavaPlugin {
         return creator;
     }
 
-    public boolean shouldRestartTasksOnUpdate() {
-        return restartTasksOnUpdate;
+    public Config getPluginConfig() {
+        return config;
     }
 
     public boolean isChatEnabled(){
@@ -109,6 +106,10 @@ public class ServerAnnouncements extends JavaPlugin {
         return chatHandler;
     }
 
+    public void loadConfig(){
+        config = new Config(getConfig());
+    }
+
     private void loadHandlers(){
         if(getConfig().getBoolean("notification.bossbar.enabled")){
             bossBarHandler = new BossBarHandler(this);
@@ -117,11 +118,10 @@ public class ServerAnnouncements extends JavaPlugin {
             chatHandler = new ChatHandler(this);
         }
         if(getConfig().getBoolean("notification.actionbar.enabled")) {
-            try {
-                Class.forName("org.spigotmc.SpigotConfig");
+            if(isSpigot()){
                 getPluginLogger().logMessage("Spigot detected, using SpigotAPI!");
                 actionBarHandler = new SpigotActionBarHandler(this);
-            } catch (Throwable tr) {
+            } else {
                 getPluginLogger().logMessage(ChatColor.AQUA + "Bukkit detected!");
                 if (!getServer().getPluginManager().isPluginEnabled("ProtocolLib")) {
                     getPluginLogger().logError("ProtocolLib missing!, ActionBar functionality disabled.");
@@ -130,6 +130,15 @@ public class ServerAnnouncements extends JavaPlugin {
                 getPluginLogger().logMessage("ProtocolLib detected, using ProtocolLibAPI!");
                 actionBarHandler = new BukkitActionBarHandler(this);
             }
+        }
+    }
+
+    public boolean isSpigot(){
+        try {
+            Class.forName("org.spigotmc.SpigotConfig");
+            return true;
+        } catch (Throwable tr) {
+            return  false;
         }
     }
 }

@@ -8,12 +8,14 @@ import org.bukkit.event.player.PlayerEvent;
 public class AnnouncementSendEvent extends PlayerEvent implements Cancellable {
 
     private static final HandlerList handlers = new HandlerList();
+    private final String date;
     private String message;
     private boolean cancelled;
 
-    public AnnouncementSendEvent(Player player, String message) {
+    public AnnouncementSendEvent(Player player, String message, String date) {
         super(player);
         this.message = message;
+        this.date = date;
     }
 
     public String getMessage(){
@@ -22,6 +24,10 @@ public class AnnouncementSendEvent extends PlayerEvent implements Cancellable {
 
     public void setMessage(String message){
         this.message = message;
+    }
+
+    public String getDate() {
+        return date;
     }
 
     @Override

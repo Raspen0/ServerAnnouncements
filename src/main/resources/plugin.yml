@@ -1,14 +1,63 @@
 name: ServerAnnouncements
 author: raspen0
+description: A Bukkit/Spigot plugin that allows server owners to display server announcements to players.
 main: nl.raspen0.serverannouncements.ServerAnnouncements
 version: ${project.version}
 softdepend: [PlaceholderAPI, ProtocolLib]
 commands:
    announcements:
-      description: Announcements
+      description: Announcements command
       aliases: ann
-      usage: /announcements
+      usage: /announcements {read/admin}
 permissions:
+   serverann.view:
+      description: Allows you to read Announcements you have permission for.
+      default: true
+   serverann.read:
+      description: Allows you to mark Announcements as read.
+      default: true
+   serverann.notification.chat:
+      description: Allows you to recieve Announcement notifications in chat.
+      default: true
+   serverann.notification.actionbar:
+      description: Allows you to recieve Announcement notifications in the ActionBar.
+      default: true
+   serverann.notification.bossbar:
+      description: Allows you to recieve Announcement notifications in the BossBar.
+      default: true
    serverann.lang.*:
       description: Language permissions
       default: false
+   serverann.admin:
+      description: Allows you to use the admin commands.
+      default: op
+   serverann.admin.creator:
+      description: Allows you to use the Announcement creator.
+      default: op
+   serverann.admin.modify:
+      description: Allows you to modify Announcements.
+      default: op
+   serverann.admin.modify.text:
+      description: Allows you to modify the text of Announcements.
+      default: op
+   serverann.admin.modify.title:
+      description: Allows you to modify the title of Announcements.
+      default: op
+   serverann.admin.modify.permission:
+      description: Allows you to modify the permission of Announcements.
+      default: op
+   serverann.admin.delete:
+      description: Allows you to delete Announcements.
+      default: op
+   serverann.admin.list:
+      description: Allows you to view the Announcements list.
+      default: op
+   serverann.admin.preview:
+      description: Allows you to preview Announcements.
+      default: op
+   serverann.admin.info:
+      description: Allows you to view player info.
+      default: op
+   serverann.admin.reload:
+      description: Allows you to reload the plugin.
+      default: op

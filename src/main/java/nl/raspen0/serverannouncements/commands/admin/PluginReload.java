@@ -10,6 +10,11 @@ public class PluginReload implements AdminCommand{
 
     @Override
     public void runCommand(CommandSender sender, String[] args, ServerAnnouncements plugin) {
+        if(!sender.hasPermission("serverann.admin.reload")){
+            sender.sendMessage(plugin.getLangHandler().getMessage(sender, "noPerm"));
+            return;
+        }
+        plugin.loadConfig();
         plugin.getLangHandler().reloadMessages();
         sender.sendMessage(plugin.getLangHandler().getMessage(sender, "announceReload"));
         plugin.getAnnouncementHandler().reloadAnnouncements();

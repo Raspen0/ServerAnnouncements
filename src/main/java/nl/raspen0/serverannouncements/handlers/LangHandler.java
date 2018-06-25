@@ -6,28 +6,25 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class LangHandler {
 
     private Map<String, String> messages = new HashMap<>();
     private List<String> loadedLangs = new ArrayList<>();
     private final ServerAnnouncements plugin;
-    private boolean multiLanguage;
+
 
     public LangHandler(ServerAnnouncements plugin){
         this.plugin = plugin;
-        multiLanguage = plugin.getConfig().getBoolean("language.multiLanguage");
         loadMessages();
     }
 
-    public String getPlayerLanguage(CommandSender sender){
-        if(!multiLanguage){
+    private String getPlayerLanguage(CommandSender sender){
+        if(!plugin.getPluginConfig().multiLanguage()){
             return loadedLangs.get(0);
         }
         for(String lang : loadedLangs){
@@ -63,7 +60,6 @@ public class LangHandler {
     public void reloadMessages(){
         messages.clear();
         loadedLangs.clear();
-        multiLanguage = plugin.getConfig().getBoolean("language.multiLanguage");
         loadMessages();
     }
 
@@ -71,16 +67,24 @@ public class LangHandler {
         loadedLangs = plugin.getConfig().getStringList("language.languages");
         int count = 0;
         for(String lang : loadedLangs){
-            if(!multiLanguage){
+            if(!plugin.getPluginConfig().multiLanguage()){
                 if(count == 1){
                     return;
                 }
             }
             try {
-                YamlConfiguration file = new YamlConfiguration();
-                file.load(new InputStreamReader(plugin.getResource("messages_" + lang + ".yml")));
-                for(String message : file.getKeys(false)){
-                    messages.put(lang + message, ChatColor.translateAlternateColorCodes('&', file.getString(message)));
+                YamlConfiguration fileConfiguration = new YamlConfiguration();
+                File file = new File(plugin.getDataFolder() + File.separator + "messages_" + lang + ".yml");
+                if(file.exists()){
+                    plugin.getPluginLogger().logMessage("Loading language " + lang + " from plugin directory.");
+                    fileConfiguration.load(file);
+                } else {
+                    plugin.getPluginLogger().logMessage("Loading language " + lang + " from jar.");
+                    fileConfiguration.load(new InputStreamReader(plugin.getResource("messages_" + lang + ".yml")));
+                }
+
+                for(String message : fileConfiguration.getKeys(false)){
+                    messages.put(lang + message, ChatColor.translateAlternateColorCodes('&', fileConfiguration.getString(message)));
                 }
                 count++;
             } catch (IOException | InvalidConfigurationException e) {

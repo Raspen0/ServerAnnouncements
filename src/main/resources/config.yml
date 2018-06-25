@@ -30,6 +30,11 @@ notification:
      # How many seconds the ActionBar notification should be displayed.
      duration: 10
 
+announcements:
+  # If creation date of announcements should be shown before the announcements.
+  showDate: true
+  # How many Announcements should be shown per page. (Default 3)
+  announcementsPerPage: 3
 
 # Language settings.
 language:

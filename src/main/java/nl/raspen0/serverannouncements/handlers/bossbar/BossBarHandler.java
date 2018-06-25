@@ -91,6 +91,5 @@ public class BossBarHandler {
             UUID uuid = (UUID) e.getKey();
             unloadPlayer(Bukkit.getPlayer(uuid));
         }
-        playerMap = null;
     }
 }
