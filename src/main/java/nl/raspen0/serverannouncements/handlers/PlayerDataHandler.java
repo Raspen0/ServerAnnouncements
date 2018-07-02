@@ -23,6 +23,10 @@ public class PlayerDataHandler {
         return players.get(id);
     }
 
+    public boolean isPlayerLoaded(UUID id){
+        return players.containsKey(id);
+    }
+
     void addPlayer(UUID uuid, PlayerData data){
         players.put(uuid, data);
     }

@@ -35,10 +35,13 @@ public class AnnouncementModify implements AdminCommand{
             return;
         }
         String title = args[3];
-        modifyAnnouncement(sender, title, change, args[4], plugin);
+        StringBuilder builder = new StringBuilder();
+        for(int i = 4; i < args.length; i++){
+            builder.append(args[i]).append(" ");
+        }
+        modifyAnnouncement(sender, title, change, builder.toString(), plugin);
     }
 
-    //TODO: Optimize
     private void modifyAnnouncement(CommandSender sender, String title, String change, String value, ServerAnnouncements plugin){
         FileConfiguration file = plugin.getAnnouncementHandler().getAnnouncementsFile();
         String text = file.getString(title + ".text");
@@ -59,46 +62,26 @@ public class AnnouncementModify implements AdminCommand{
                 return;
             }
             file.set(title + "." + change, value);
+            text = value;
         }
         if(change.equals("permission")){
             if(!sender.hasPermission("serverann.admin.modify.permission")){
                 sender.sendMessage(plugin.getLangHandler().getMessage(sender, "noPerm"));
                 return;
             }
-            for(Player p : plugin.getServer().getOnlinePlayers()) {
-                PlayerData data = plugin.getPlayerHandler().getPlayer(p.getUniqueId());
-                if(data == null) {
-                    continue;
-                }
-                boolean hasPermission;
-                if(value.equals("none")) {
-                    hasPermission = true;
-                    value = null;
-                } else {
-                    hasPermission = p.hasPermission(value);
-                }
-                //If player had permission before
-                if(permission == null || p.hasPermission(permission)){
-                    if(!hasPermission){
-                        //Not anymore
-                        data.decreaseUnreadCount();
-                    }
-                } else {
-                    //If player did not have permission before
-                    if(hasPermission){
-                        data.increaseUnreadCount();
-                    }
-                }
-                new TaskHandler().reloadPlayer(p, data, plugin);
+            if(value.equals("none")) {
+                value = null;
             }
+            updatePlayerCounts(permission, value, plugin);
             file.set(title + "." + change, value);
+            permission = value;
         }
         if(change.equals("title")){
             if(!sender.hasPermission("serverann.admin.modify.title")){
                 sender.sendMessage(plugin.getLangHandler().getMessage(sender, "noPerm"));
                 return;
             }
-            plugin.getAnnouncementHandler().removeLoadedAnnouncement(title);
+            plugin.getAnnouncementHandler().unloadAnnouncement(title);
             file.set(title, null);
             title = value;
             file.set(title + ".text", text);
@@ -106,6 +89,7 @@ public class AnnouncementModify implements AdminCommand{
             if(permission != null){
                 file.set(title + ".permission", permission);
             }
+            title = value;
         }
         plugin.getAnnouncementHandler().addAnnounement(title, id, new Announcement(ChatColor.translateAlternateColorCodes('&', text), date, permission));
         try {
@@ -116,5 +100,34 @@ public class AnnouncementModify implements AdminCommand{
         }
         sender.sendMessage(plugin.getLangHandler().getMessage(sender, "adminModified").replace("{0}", change)
                 .replace("{1}", oldTitle));
+    }
+
+    private void updatePlayerCounts(String permission, String value, ServerAnnouncements plugin){
+        for(Player p : plugin.getServer().getOnlinePlayers()) {
+            PlayerData data = plugin.getPlayerHandler().getPlayer(p.getUniqueId());
+            if(data == null) {
+                continue;
+            }
+            boolean hasPermission;
+            if(value == null) {
+                hasPermission = true;
+            } else {
+                hasPermission = p.hasPermission(value);
+            }
+
+            //If player had permission before
+            if(permission == null || p.hasPermission(permission)){
+                if(!hasPermission){
+                    //Not anymore
+                    data.decreaseUnreadCount();
+                }
+            } else {
+                //If player did not have permission before
+                if(hasPermission){
+                    data.increaseUnreadCount();
+                }
+            }
+            new TaskHandler().reloadPlayer(p, data, plugin);
+        }
     }
 }

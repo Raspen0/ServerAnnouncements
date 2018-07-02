@@ -6,7 +6,7 @@ public class Logger {
 
     private final ServerAnnouncements plugin;
 
-    public Logger(ServerAnnouncements plugin){
+    Logger(ServerAnnouncements plugin){
         this.plugin = plugin;
     }
 
@@ -16,5 +16,11 @@ public class Logger {
 
     public void logError(String message){
         plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "[ServerAnnouncements] " + message);
+    }
+
+    public void logDebug(String message){
+        if(plugin.getPluginConfig().isDebug()) {
+            plugin.getServer().getConsoleSender().sendMessage(ChatColor.YELLOW + "[ServerAnn-Debug] " + message);
+        }
     }
 }

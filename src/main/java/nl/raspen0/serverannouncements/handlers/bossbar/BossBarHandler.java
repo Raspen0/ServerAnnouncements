@@ -34,8 +34,10 @@ public class BossBarHandler {
 
     public int startBossBarTask(Player player) {
         if (repeat > 0) {
+            plugin.getPluginLogger().logDebug("Starting repeating BossBar task!");
             return repeatingBossBarTask(player);
         } else {
+            plugin.getPluginLogger().logDebug("Starting BossBar task!");
             return bossBarTask(player);
         }
     }

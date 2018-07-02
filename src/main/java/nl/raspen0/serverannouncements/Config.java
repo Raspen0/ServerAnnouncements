@@ -7,6 +7,7 @@ public class Config {
     private boolean restartTasksOnUpdate;
     private boolean showDate;
     private boolean multiLanguage;
+    private boolean debug;
 
     private int announcementsPerPage;
 
@@ -15,6 +16,7 @@ public class Config {
         this.showDate = config.getBoolean("announcements.showDate");
         this.multiLanguage = config.getBoolean("language.multiLanguage");
         this.announcementsPerPage = config.getInt("announcements.announcementsPerPage");
+        this.debug = config.getBoolean("debug.logging");
     }
 
     public boolean showDate() {
@@ -31,5 +33,9 @@ public class Config {
 
     public int getAnnouncementsPerPage() {
         return announcementsPerPage;
+    }
+
+    public boolean isDebug() {
+        return debug;
     }
 }

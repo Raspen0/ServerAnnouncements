@@ -49,6 +49,11 @@ language:
    - eng
    - nl
 
+# Settings relating to debugging the plugin
+debug:
+  # Logs debug info to the console. (Default: false)
+  logging: false
+
 # Shows the last run version of ServerAnnouncements.
 # This value is used to determine if the config needs to be updated.
 # Changing this can lead to config corruption.

@@ -112,9 +112,11 @@ public class ServerAnnouncements extends JavaPlugin {
 
     private void loadHandlers(){
         if(getConfig().getBoolean("notification.bossbar.enabled")){
+            getPluginLogger().logDebug("Loading BossBarHandler.");
             bossBarHandler = new BossBarHandler(this);
         }
         if(getConfig().getBoolean("notification.chat.enabled")){
+            getPluginLogger().logDebug("Loading ChatHandler.");
             chatHandler = new ChatHandler(this);
         }
         if(getConfig().getBoolean("notification.actionbar.enabled")) {

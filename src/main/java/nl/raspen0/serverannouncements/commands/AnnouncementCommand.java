@@ -29,7 +29,7 @@ public class AnnouncementCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (cmd.getName().equalsIgnoreCase("announcements")) {
             if (!(sender instanceof Player)) {
-                sender.sendMessage(plugin.getLangHandler().getMessage(sender, "OnlyPlayer"));
+                sender.sendMessage(plugin.getLangHandler().getMessage(sender, "onlyPlayer"));
                 return true;
             }
             if (!sender.hasPermission("serverann.view")) {
@@ -37,16 +37,25 @@ public class AnnouncementCommand implements CommandExecutor {
                 return true;
             }
             Player player = (Player) sender;
-            List<Integer> read = plugin.getPlayerHandler().getPlayer(player.getUniqueId()).getReadAnnouncements();
-            if (read == null) {
-                //Message??
+            if(!plugin.getPlayerHandler().isPlayerLoaded(player.getUniqueId())){
+                if(args.length > 0) {
+                    if (args[0].equalsIgnoreCase("read")) {
+                        sender.sendMessage(plugin.getLangHandler().getMessage(sender, "announceAlreadyRead"));
+                        return true;
+                    }
+                    if (args[0].equalsIgnoreCase("admin")) {
+                        adminCommand(sender, args);
+                        return true;
+                    }
+                }
+                player.sendMessage(plugin.getLangHandler().getMessage(player, "announceEmpty"));
                 return true;
             }
-
+            List<Integer> read = plugin.getPlayerHandler().getPlayer(player.getUniqueId()).getReadAnnouncements();
             plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
                 int startPoint = 1;
                 int page = 1;
-                if (args.length == 1) {
+                if (args.length >= 1) {
                     try {
                         page = Integer.parseInt(args[0]);
                         if (page > 1) {
@@ -59,6 +68,7 @@ public class AnnouncementCommand implements CommandExecutor {
                         }
                         if (args[0].equalsIgnoreCase("admin")) {
                             adminCommand(sender, args);
+                            return;
                         }
                         //Default to first page.
                     }

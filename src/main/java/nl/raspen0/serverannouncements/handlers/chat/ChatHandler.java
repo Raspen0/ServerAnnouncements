@@ -20,8 +20,10 @@ public class ChatHandler {
 
     public int startChatTask(Player player){
         if(repeat > 0){
+            plugin.getPluginLogger().logDebug("Starting repeating Chat task!");
             return plugin.getServer().getScheduler().runTaskTimer(plugin, () -> doChatTask(player), delay * 20, repeat * 20).getTaskId();
         } else {
+            plugin.getPluginLogger().logDebug("Starting Chat task!");
             return plugin.getServer().getScheduler().runTaskLater(plugin, () -> doChatTask(player), delay * 20).getTaskId();
         }
     }

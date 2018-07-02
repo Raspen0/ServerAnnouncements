@@ -16,7 +16,6 @@ public class PluginReload implements AdminCommand{
         }
         plugin.loadConfig();
         plugin.getLangHandler().reloadMessages();
-        sender.sendMessage(plugin.getLangHandler().getMessage(sender, "announceReload"));
         plugin.getAnnouncementHandler().reloadAnnouncements();
         plugin.getPlayerHandler().unloadPlayers();
         if(plugin.isBossBarEnabled()){

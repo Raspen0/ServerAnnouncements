@@ -7,7 +7,7 @@ noticeBossBar: "&bYou have &e{0}&b unread server announcements!, to read use &e/
 announceClear: "&bMarked announcements as read!"
 announceNextPage: "&bUse&e {0} &bto go to the next page!"
 announceEmpty: "&bThere are no new server announcements!"
-announceReload: "&bReloading ServerAnnouncements."
+announceAlreadyRead: "&bYou have already read all available announcements!"
 announceReloaded: "&bServerAnnouncements has been reloaded!"
 creatorHeader: "&b------ &eAnnouncement Creation&b ------"
 creatorStart: "&bEntered Announcement creation, to cancel type &ecancel&b."

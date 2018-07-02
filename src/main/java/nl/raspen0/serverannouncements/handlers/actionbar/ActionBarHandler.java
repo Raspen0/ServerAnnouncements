@@ -25,8 +25,10 @@ public abstract class ActionBarHandler {
 
     public int startActionBarTask(Player player){
         if(repeat > 0){
+            plugin.getPluginLogger().logDebug("Starting repeating ActionBar task!");
             return repeatingActionBarTask(player);
         } else {
+            plugin.getPluginLogger().logDebug("Starting ActionBar task!");
             return actionBarTask(player);
         }
     }

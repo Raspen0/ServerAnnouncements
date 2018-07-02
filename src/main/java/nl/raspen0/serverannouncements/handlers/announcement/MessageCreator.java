@@ -85,6 +85,7 @@ public class MessageCreator implements Listener {
                     PlayerData data = plugin.getPlayerHandler().getPlayer(p.getUniqueId());
                     if(data == null){
                         //Load data of online player if it wasn't loaded before
+                        plugin.getPluginLogger().logDebug("Data of " + p.getName() + " was not loaded, loading from file.");
                         data = plugin.getPlayerHandler().loadPlayer(p);
                         if(data.getUnreadCount() == 0){
                             continue;

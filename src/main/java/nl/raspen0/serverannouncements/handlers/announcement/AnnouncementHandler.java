@@ -56,7 +56,7 @@ public class AnnouncementHandler {
         return loadedAnnouncements;
     }
 
-    public void removeLoadedAnnouncement(String title){
+    public void unloadAnnouncement(String title){
         loadedAnnouncements.remove(title);
     }
 
