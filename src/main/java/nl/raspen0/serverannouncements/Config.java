@@ -9,6 +9,7 @@ public class Config {
     private boolean multiLanguage;
     private boolean debug;
 
+    private String hoverMessage;
     private int announcementsPerPage;
 
     Config(FileConfiguration config){
@@ -17,6 +18,7 @@ public class Config {
         this.multiLanguage = config.getBoolean("language.multiLanguage");
         this.announcementsPerPage = config.getInt("announcements.announcementsPerPage");
         this.debug = config.getBoolean("debug.logging");
+        this.hoverMessage = config.getString("announcements.hoverMessage");
     }
 
     public boolean showDate() {
@@ -33,6 +35,10 @@ public class Config {
 
     public int getAnnouncementsPerPage() {
         return announcementsPerPage;
+    }
+
+    public String getHoverMessage() {
+        return hoverMessage;
     }
 
     public boolean isDebug() {

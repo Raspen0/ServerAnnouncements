@@ -106,7 +106,7 @@ public class AnnouncementModify implements AdminCommand{
         for(Player p : plugin.getServer().getOnlinePlayers()) {
             PlayerData data = plugin.getPlayerHandler().getPlayer(p.getUniqueId());
             if(data == null) {
-                continue;
+                data = plugin.getPlayerHandler().loadPlayer(p);
             }
             boolean hasPermission;
             if(value == null) {

@@ -6,7 +6,7 @@ import org.bukkit.command.CommandSender;
 
 import java.util.Map;
 
-public class AnnouncementList implements AdminCommand {
+public class AnnouncementListCommand implements AdminCommand {
 
     @Override
     public void runCommand(CommandSender sender, String[] args, ServerAnnouncements plugin) {

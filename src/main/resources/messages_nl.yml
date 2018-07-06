@@ -6,6 +6,7 @@ noticeHotBar: "&bJe hebt &e{0}&b ongelezen server aankondigingen!, Om te lezen, 
 noticeBossBar: "&bJe hebt &e{0}&b ongelezen server aankondigingen!, Om te lezen, gebruik &e/ann&b."
 announceClear: "&bAankondigingen gemarkeerd als gelezen."
 announceNextPage: "&bGebruik&e {0} &bom naar de volgende pagina te gaan!"
+announcePageTooHigh: "&cEr zijn niet zoveel pagina's van aankondigingen!"
 announceEmpty: "&bEr zijn geen nieuwe server aankondigingen!"
 announceAlreadyRead: "&bJe hebt alle beschikbare aankondigingen al gelezen!"
 announceReloaded: "&bServerAnnouncements is herladen."

@@ -35,6 +35,12 @@ announcements:
   showDate: true
   # How many Announcements should be shown per page. (Default 3)
   announcementsPerPage: 3
+  # Shows a message when hovering over a url in announcements.
+  # Valid arguments:
+  #   url (Shows the url of the link).
+  #   message (Shows a Click here to open link message.)
+  #   disabled (Show no hover message).
+  hoverMessage: url
 
 # Language settings.
 language:

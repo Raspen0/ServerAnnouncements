@@ -6,6 +6,7 @@ noticeHotBar: "&bYou have &e{0}&b unread server announcements!, to read use &e/a
 noticeBossBar: "&bYou have &e{0}&b unread server announcements!, to read use &e/ann&b."
 announceClear: "&bMarked announcements as read!"
 announceNextPage: "&bUse&e {0} &bto go to the next page!"
+announcePageTooHigh: "&cThere are not that many pages of announcements!"
 announceEmpty: "&bThere are no new server announcements!"
 announceAlreadyRead: "&bYou have already read all available announcements!"
 announceReloaded: "&bServerAnnouncements has been reloaded!"

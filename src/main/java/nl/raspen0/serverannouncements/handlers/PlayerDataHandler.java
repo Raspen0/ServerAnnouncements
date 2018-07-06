@@ -130,8 +130,10 @@ public class PlayerDataHandler {
             }
             file.set(uuid.toString() + ".read", list);
             plugin.getServer().getScheduler().runTask(plugin, () -> {
-                getPlayer(uuid).setReadAnnouncement(list);
-                getPlayer(uuid).clearTasks();
+                //getPlayer(uuid).setReadAnnouncement(list);
+                //getPlayer(uuid).clearTasks();
+                unloadPlayer(uuid);
+
                 plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
                     try {
                         file.save(new File(plugin.getDataFolder() + File.separator + "data.yml"));
