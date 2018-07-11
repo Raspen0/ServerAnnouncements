@@ -1,6 +1,8 @@
 package nl.raspen0.serverannouncements;
 
 import net.md_5.bungee.api.chat.TextComponent;
+import nl.raspen0.serverannouncements.events.AnnouncementsSendEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
@@ -9,7 +11,8 @@ import java.util.Map;
 public class SpigotAnnouncementList implements AnnouncementList{
 
     private Map<Integer, TextComponent> map;
-    private final int pageSize;
+    private boolean nextPage = false;
+    private int pageSize;
 
     public SpigotAnnouncementList(int pageSize){
         this.pageSize = pageSize;
@@ -17,8 +20,18 @@ public class SpigotAnnouncementList implements AnnouncementList{
     }
 
     @Override
-    public boolean isEmpty() {
-        return map.isEmpty();
+    public void setTotal(int annTotal) {
+        this.pageSize = annTotal;
+    }
+
+    @Override
+    public void setNextPage() {
+        this.nextPage = true;
+    }
+
+    @Override
+    public boolean hasNextPage() {
+        return nextPage;
     }
 
     @Override
@@ -39,8 +52,12 @@ public class SpigotAnnouncementList implements AnnouncementList{
 
     @Override
     public void sendAnnouncements(Player player) {
-        for(int i = 1; i < map.size() + 1; i++){
-            player.spigot().sendMessage(map.get(i));
+        AnnouncementsSendEvent event = new AnnouncementsSendEvent(player);
+        Bukkit.getServer().getPluginManager().callEvent(event);
+        if(!event.isCancelled()) {
+            for (int i = 1; i < map.size() + 1; i++) {
+                player.spigot().sendMessage(map.get(i));
+            }
         }
     }
 }

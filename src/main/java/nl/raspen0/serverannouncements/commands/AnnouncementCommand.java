@@ -57,17 +57,16 @@ public class AnnouncementCommand implements CommandExecutor {
                 return true;
             }
 
-            //TODO: Modify Event to contain annList.
-
             List<Integer> read = plugin.getPlayerHandler().getPlayer(player.getUniqueId()).getReadAnnouncements();
             plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
+                final int pageSize = plugin.getPluginConfig().getAnnouncementsPerPage();
                 int toSkip = 1;
                 int page = 1;
                 if (args.length >= 1) {
                     try {
                         page = Integer.parseInt(args[0]);
                         if (page > 1) {
-                            toSkip = ((page - 1) * 3);
+                            toSkip = ((page - 1) * pageSize);
                         }
                     } catch (NumberFormatException e) {
                         if (args[0].equalsIgnoreCase("read")) {
@@ -83,9 +82,7 @@ public class AnnouncementCommand implements CommandExecutor {
                 }
 
                 final Map<Integer, Announcement> map = plugin.getAnnouncementHandler().getAnnouncements();
-                //final List<Integer> keyList = new ArrayList<>(map.keySet());
-                //final int pageSize = entry + plugin.getPluginConfig().getAnnouncementsPerPage();
-                final int pageSize = plugin.getPluginConfig().getAnnouncementsPerPage();
+                final int maxAnnCount = pageSize + 1;
                 AnnouncementList annList;
                 if (plugin.isSpigot()) {
                     annList = new SpigotAnnouncementList(pageSize);
@@ -95,13 +92,31 @@ public class AnnouncementCommand implements CommandExecutor {
                 int mapPos = 1;
                 int annCount = 1;
                 for(int ID : map.keySet()){
-                    if(annCount == pageSize + 1){
-                        return;
-                    }
-
+                    plugin.getPluginLogger().logDebug("Processing ID: " + ID + ", annCount: " + annCount);
                     if(!annCheck(read, ID, map, player)){
+                        plugin.getPluginLogger().logDebug("ID: " + ID + " did not pass check!");
+                        if(mapPos == map.size()){
+                            //If thee annList is not full
+                            //4 because this is after 3 Announcements should have been added.
+                            if(annCount < maxAnnCount){
+                                final int finalAnnCount = annCount - 1;
+                                if(finalAnnCount == 0){
+                                    plugin.getServer().getScheduler().runTask(plugin, () -> player.sendMessage(plugin.getLangHandler().getMessage(player, "announcePageTooHigh")));
+                                    return;
+                                }
+                                plugin.getPluginLogger().logDebug("The amount of Announcements is less then the pageSize, changing pageSize to " + finalAnnCount);
+                                plugin.getServer().getScheduler().runTask(plugin, () -> annList.setTotal(finalAnnCount));
+                            }
+                            return;
+                        }
                         mapPos++;
                         continue;
+                    }
+                    plugin.getPluginLogger().logDebug("ID: " + ID + " passed check!");
+                    if(annCount == maxAnnCount){
+                        plugin.getPluginLogger().logDebug("annCount is higher then pageSize, nextPage message will be send.");
+                        plugin.getServer().getScheduler().runTask(plugin, annList::setNextPage);
+                        return;
                     }
 
                     if (annCount == 1) {
@@ -124,7 +139,6 @@ public class AnnouncementCommand implements CommandExecutor {
                         if (plugin.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
                             message = PlaceholderAPI.setPlaceholders(player, message);
                         }
-                        //Run event?
                         final String finalMessage = message;
                         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
                             if (finalMessage.contains("url:")) {
@@ -149,7 +163,7 @@ public class AnnouncementCommand implements CommandExecutor {
                     mapPos++;
                 }
                 if(annCount == 1) {
-                    //int finalPage = page;
+                    System.out.println("Done with loop!");
                     plugin.getServer().getScheduler().runTask(plugin, () -> player.sendMessage(plugin.getLangHandler().getMessage(player, "announcePageTooHigh")));
                 }
             });
@@ -162,7 +176,7 @@ public class AnnouncementCommand implements CommandExecutor {
             if (annList.addAnnouncement(announcement, annCount) || mapPos == mapSize) {
                 player.sendMessage(plugin.getLangHandler().getMessage(player, "announceHeader"));
                 annList.sendAnnouncements(player);
-                if (mapSize > mapPos) {
+                if (annList.hasNextPage()) {
                     final String nextPage = String.valueOf(page + 1);
                     if (plugin.isSpigot()) {
                         player.spigot().sendMessage(sendNextPageMessage(player, nextPage));
@@ -213,7 +227,6 @@ public class AnnouncementCommand implements CommandExecutor {
                 textComponent.addExtra(s);
             }
         }
-        //player.spigot().sendMessage(textComponent);
         return textComponent;
     }
 
@@ -230,7 +243,6 @@ public class AnnouncementCommand implements CommandExecutor {
         TextComponent textComponent3 = new TextComponent(message[1]);
         textComponent3.setColor(net.md_5.bungee.api.ChatColor.AQUA);
         textComponent.addExtra(textComponent3);
-        //player.spigot().sendMessage(textComponent);
         return textComponent;
     }
 

@@ -5,20 +5,24 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;
 
-public class AnnouncementSendEvent extends PlayerEvent implements Cancellable {
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
+public class AnnouncementsSendEvent extends PlayerEvent implements Cancellable {
 
     private static final HandlerList handlers = new HandlerList();
-    private String message;
+//    private Collection<?> announcements;
     private boolean cancelled;
 
-    public AnnouncementSendEvent(Player player, String message) {
+    public AnnouncementsSendEvent(Player player) {
         super(player);
-        this.message = message;
+//        this.announcements = announcements;
     }
 
-    public String getMessage(){
-        return message;
-    }
+//    public Collection<?> getMessages(){
+//        return announcements;
+//    }
 
     @Override
     public HandlerList getHandlers() {
