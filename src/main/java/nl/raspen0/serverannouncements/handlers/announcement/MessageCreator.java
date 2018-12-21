@@ -56,6 +56,10 @@ public class MessageCreator implements Listener {
                     player.sendMessage(plugin.getLangHandler().getMessage(player, "creatorTitleExists"));
                     return;
                 }
+                if(event.getMessage().contains(".")){
+                    player.sendMessage(plugin.getLangHandler().getMessage(player, "creatorInvalidCharacter"));
+                    return;
+                }
                 playerMap.get(player.getUniqueId()).setTitle(event.getMessage());
                 player.sendMessage(plugin.getLangHandler().getMessage(player, "creatorText"));
                 break;

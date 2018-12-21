@@ -1,5 +1,6 @@
 package nl.raspen0.serverannouncements;
 
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import nl.raspen0.serverannouncements.events.AnnouncementsSendEvent;
 import org.bukkit.Bukkit;
@@ -10,7 +11,7 @@ import java.util.Map;
 
 public class SpigotAnnouncementList implements AnnouncementList{
 
-    private Map<Integer, TextComponent> map;
+    private Map<Integer, BaseComponent[]> map;
     private boolean nextPage = false;
     private int pageSize;
 
@@ -37,10 +38,11 @@ public class SpigotAnnouncementList implements AnnouncementList{
     @Override
     public boolean addAnnouncement(Object announcement, int annCount) {
         if(announcement instanceof TextComponent){
-            map.put(annCount, (TextComponent) announcement);
+            map.put(annCount, new BaseComponent[]{(TextComponent) announcement});
 
         } else if(announcement instanceof String){
-            map.put(annCount, new TextComponent((String) announcement));
+            String ann = (String) announcement;
+            map.put(annCount, TextComponent.fromLegacyText(ann));
         }
         return isFull();
     }

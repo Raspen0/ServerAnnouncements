@@ -79,7 +79,7 @@ public class PlayerDataHandler {
         for(String uuid : file.getKeys(false)) {
             List<Integer> list = file.getIntegerList(uuid + ".read");
             if (list.contains(id)) {
-                list.remove(id);
+                list.remove(Integer.valueOf(id));
                 file.set(uuid + ".read", list);
             }
         }

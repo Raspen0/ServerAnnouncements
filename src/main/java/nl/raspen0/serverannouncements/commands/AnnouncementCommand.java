@@ -1,6 +1,7 @@
 package nl.raspen0.serverannouncements.commands;
 
 import me.clip.placeholderapi.PlaceholderAPI;
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -224,7 +225,10 @@ public class AnnouncementCommand implements CommandExecutor {
                 textComponent.addExtra(linkComponent);
                 textComponent.addExtra(linkMessage[1]);
             } else {
-                textComponent.addExtra(s);
+                BaseComponent[] text = TextComponent.fromLegacyText(s);
+                for(BaseComponent b : text){
+                    textComponent.addExtra(b);
+                }
             }
         }
         return textComponent;
@@ -300,6 +304,14 @@ class AnnouncementDelete implements AdminCommand {
     public void runCommand(CommandSender sender, String[] args, ServerAnnouncements plugin) {
         if (!sender.hasPermission("serverann.admin.delete")) {
             sender.sendMessage(plugin.getLangHandler().getMessage(sender, "noPerm"));
+            return;
+        }
+        if(args.length < 3){
+            sender.sendMessage(plugin.getLangHandler().getMessage(sender, "notEnoughArgs"));
+            return;
+        }
+        if(!plugin.getAnnouncementHandler().isAnnouncementLoaded(args[2])){
+            sender.sendMessage(plugin.getLangHandler().getMessage(sender, "deleteInvalidTitle"));
             return;
         }
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> plugin.getAnnouncementHandler().deleteAnnouncement(args[2]));

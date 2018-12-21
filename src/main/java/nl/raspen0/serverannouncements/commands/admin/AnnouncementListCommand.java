@@ -27,10 +27,13 @@ public class AnnouncementListCommand implements AdminCommand {
                 builder.append(", ").append(ChatColor.AQUA).append(title).append("(").append(ChatColor.YELLOW)
                         .append(id).append(ChatColor.AQUA).append(")");
             }
-            plugin.getServer().getScheduler().runTask(plugin, () -> {
-                sender.sendMessage(plugin.getLangHandler().getMessage(sender, "adminList"));
-                sender.sendMessage(builder.toString());
-            });
+            if(builder.length() == 0){
+                sender.sendMessage(plugin.getLangHandler().getMessage(sender, "adminListEmpty"));
+                return;
+            }
+
+            sender.sendMessage(plugin.getLangHandler().getMessage(sender, "adminList"));
+            sender.sendMessage(builder.toString());
         });
     }
 }

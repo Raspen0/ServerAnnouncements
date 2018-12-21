@@ -13,10 +13,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class AnnouncementHandler {
 
@@ -66,7 +63,12 @@ public class AnnouncementHandler {
     }
 
     void saveNewAnnouncement(String title, Announcement announcement, String rawText){
-        int ID = announcements.size() + 1;
+        int ID;
+        if(announcements.isEmpty()){
+           ID = 1;
+        } else {
+            ID = Collections.max(announcements.keySet()) + 1;
+        }
         announcements.put(ID, announcement);
         loadedAnnouncements.put(title, ID);
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
