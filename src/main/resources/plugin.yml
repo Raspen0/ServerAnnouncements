@@ -4,6 +4,7 @@ description: A Bukkit/Spigot plugin that allows server owners to display server 
 main: nl.raspen0.serverannouncements.ServerAnnouncements
 version: ${project.version}
 softdepend: [PlaceholderAPI, ProtocolLib]
+api-version: 1.13
 commands:
    announcements:
       description: Announcements command

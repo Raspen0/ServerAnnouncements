@@ -18,10 +18,12 @@ import java.util.*;
 public class AnnouncementHandler {
 
     //ID, Announcement
-    private Map<Integer, Announcement> announcements = new LinkedHashMap<>();
+    //LinkedHashMap for keeping the correct order.
+    private final Map<Integer, Announcement> announcements = new LinkedHashMap<>();
 
     //Title, ID
-    private Map<String, Integer> loadedAnnouncements = new HashMap<>();
+    @Deprecated
+    private final Map<String, Integer> loadedAnnouncements = new HashMap<>();
     private final ServerAnnouncements plugin;
 
     public AnnouncementHandler(ServerAnnouncements plugin){
@@ -33,14 +35,21 @@ public class AnnouncementHandler {
         return announcements.get(ID);
     }
 
+    @Deprecated
     public Announcement getAnnouncement(String title){
-        return announcements.get(loadedAnnouncements.get(title));
+        for(Announcement ann : announcements.values()){
+            if(!ann.getTitle().equals(title)){
+                continue;
+            }
+            return ann;
+        }
+        return null;
     }
-
+    @Deprecated
     public Integer getAnnouncementID(String title){
         return loadedAnnouncements.get(title);
     }
-
+    @Deprecated
     public boolean isAnnouncementLoaded(String title){
         return loadedAnnouncements.containsKey(title);
     }
@@ -48,11 +57,11 @@ public class AnnouncementHandler {
     public Map<Integer, Announcement> getAnnouncements() {
         return announcements;
     }
-
+    @Deprecated
     public Map<String, Integer> getLoadedAnnouncements() {
         return loadedAnnouncements;
     }
-
+    @Deprecated
     public void unloadAnnouncement(String title){
         loadedAnnouncements.remove(title);
     }
@@ -151,7 +160,7 @@ public class AnnouncementHandler {
                 DateTimeFormatter format = DateTimeFormatter.ofPattern("dd-MM-yy");
                 LocalDate date = LocalDate.parse(config.getString(s + ".date"), format);
                 String permission = config.getString(s + ".permission");
-                if(announcements.put(id, new Announcement(text, date, permission)) != null){
+                if(announcements.put(id, new Announcement(text, s, date, permission)) != null){
                     plugin.getPluginLogger().logError("The messageID of message" + s + " is conflicting with another message, please check announcements.yml!");
                     continue;
                 }

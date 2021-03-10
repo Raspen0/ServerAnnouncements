@@ -30,6 +30,11 @@ public class ServerAnnouncements extends JavaPlugin {
 
     @Override
     public void onEnable(){
+        if(!isSpigot()){
+            getServer().getConsoleSender().sendMessage(ChatColor.RED + "Unsupported server implementation, please use Spigot or a fork based on it.");
+            getPluginLoader().disablePlugin(this);
+            return;
+        }
         saveDefaultConfig();
         loadConfig();
         logger = new Logger(this);
@@ -47,8 +52,8 @@ public class ServerAnnouncements extends JavaPlugin {
 
     @Override
     public void onDisable(){
-        getAnnouncementCreator().removePlayers();
         getPlayerHandler().unloadPlayers();
+        getAnnouncementCreator().removePlayers();
         if(actionBarHandler != null) {
             getActionBarHandler().unloadPlayers();
         }
@@ -120,18 +125,7 @@ public class ServerAnnouncements extends JavaPlugin {
             chatHandler = new ChatHandler(this);
         }
         if(getConfig().getBoolean("notification.actionbar.enabled")) {
-            if(isSpigot()){
-                getPluginLogger().logMessage("Spigot detected, using SpigotAPI!");
-                actionBarHandler = new SpigotActionBarHandler(this);
-            } else {
-                getPluginLogger().logMessage(ChatColor.AQUA + "Bukkit detected!");
-                if (!getServer().getPluginManager().isPluginEnabled("ProtocolLib")) {
-                    getPluginLogger().logError("ProtocolLib missing!, ActionBar functionality disabled.");
-                    return;
-                }
-                getPluginLogger().logMessage("ProtocolLib detected, using ProtocolLibAPI!");
-                actionBarHandler = new BukkitActionBarHandler(this);
-            }
+            actionBarHandler = new SpigotActionBarHandler(this);
         }
     }
 

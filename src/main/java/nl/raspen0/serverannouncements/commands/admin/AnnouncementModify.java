@@ -91,7 +91,7 @@ public class AnnouncementModify implements AdminCommand{
             }
             title = value;
         }
-        plugin.getAnnouncementHandler().addAnnounement(title, id, new Announcement(ChatColor.translateAlternateColorCodes('&', text), date, permission));
+        plugin.getAnnouncementHandler().addAnnounement(title, id, new Announcement(ChatColor.translateAlternateColorCodes('&', text), title, date, permission));
         try {
             file.save(new File(plugin.getDataFolder() + File.separator + "announcements.yml"));
         } catch (IOException e) {

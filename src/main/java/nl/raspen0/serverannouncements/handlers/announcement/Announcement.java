@@ -8,31 +8,35 @@ import java.util.Locale;
 
 public class Announcement {
 
-    private final String text;
+    private String text;
     private final String permission;
-  //  private final String title;
+    private final String title;
     private final LocalDate date;
 
     Announcement(AnnouncementBuilder builder) {
         this.text = builder.text;
         this.permission = builder.permission;
- //       this.title = builder.title;
+        this.title = builder.title;
         this.date = builder.date;
     }
 
-    public Announcement(String text, LocalDate date, String permission) {
+    public Announcement(String text, String title, LocalDate date, String permission) {
         this.text = text;
         this.permission = permission;
-  //      this.title = title;
+        this.title = title;
         this.date = date;
     }
 
-//    public String getTitle() {
-//        return title;
-//    }
+    public String getTitle() {
+        return title;
+    }
 
     public String getText() {
         return text;
+    }
+
+    public void updateText(String text){
+        this.text = text;
     }
 
     String getPermission() {

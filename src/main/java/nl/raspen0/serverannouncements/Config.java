@@ -4,13 +4,13 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 public class Config {
 
-    private boolean restartTasksOnUpdate;
-    private boolean showDate;
-    private boolean multiLanguage;
-    private boolean debug;
+    private final boolean restartTasksOnUpdate;
+    private final boolean showDate;
+    private final boolean multiLanguage;
+    private final boolean debug;
 
-    private String hoverMessage;
-    private int announcementsPerPage;
+    private final String hoverMessage;
+    private final int announcementsPerPage;
 
     Config(FileConfiguration config){
         this.restartTasksOnUpdate = config.getBoolean("restartTasksOnUpdate");

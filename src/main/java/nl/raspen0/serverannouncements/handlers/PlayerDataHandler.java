@@ -12,29 +12,60 @@ import java.util.*;
 
 public class PlayerDataHandler {
 
-    private Map<UUID, PlayerData> players = new HashMap<>();
+    //Players are only added to the map if they have unread announcements.
+    private final Map<UUID, PlayerData> players = new HashMap<>();
     private final ServerAnnouncements plugin;
 
     public PlayerDataHandler(ServerAnnouncements plugin){
         this.plugin = plugin;
     }
 
+    /**
+     * Gets the PlayerData of given player.
+     *
+     * @param id The UUID of the player.
+     *
+     * @return The PlayerData.
+     */
     public PlayerData getPlayer(UUID id){
         return players.get(id);
     }
 
-    public boolean isPlayerLoaded(UUID id){
+    /**
+     * Check if the given player has unread announcements.
+     *
+     * @param id The UUID of the player.
+     *
+     * @return true if the player has unread announcements.
+     */
+    public boolean hasUnreadAnnouncements(UUID id){
         return players.containsKey(id);
     }
 
+    /**
+     * Add a player who has unread announcements to the map.
+     *
+     * @param uuid The UUID of the player.
+     * @param data The data of the player.
+     */
     void addPlayer(UUID uuid, PlayerData data){
         players.put(uuid, data);
     }
 
+    /**
+     * Returns the PlayerData map.
+     */
     public Map<UUID, PlayerData> getPlayers(){
         return players;
     }
 
+    /**
+     * Loads the PlayerData for the given player.
+     *
+     * @param player The player.
+     *
+     * @return The PlayerData of the give player.
+     */
     public PlayerData loadPlayer(Player player){
         UUID uuid = player.getUniqueId();
         FileConfiguration file = loadDataFile();
@@ -47,6 +78,14 @@ public class PlayerDataHandler {
         return new PlayerData(list, getCount(list, player));
     }
 
+    /**
+     * Calculates the unread announcement count.
+     *
+     * @param list The list with announcement ID's.
+     * @param player The player whose count should be calculated.
+     *
+     * @return The unread announcement count.
+     */
     private int getCount(List<Integer> list, Player player){
         int count = 0;
         for(int i : plugin.getAnnouncementHandler().getAnnouncements().keySet()){
@@ -61,6 +100,10 @@ public class PlayerDataHandler {
         return count;
     }
 
+    /**
+     * Unloads the data of the give player.
+     * Used when player has no unread announcements anymore.
+     */
     void unloadPlayer(UUID uuid){
         if(players.containsKey(uuid)) {
             players.get(uuid).clearTasks();
@@ -68,12 +111,24 @@ public class PlayerDataHandler {
         }
     }
 
+    /**
+     * Unloads all the player announcement data.
+     * Used when disabling or reloading the plugin.
+     */
     public void unloadPlayers(){
-        for(UUID uuid : players.keySet()){
-            unloadPlayer(uuid);
+        Iterator<Map.Entry<UUID, PlayerData>> entries = players.entrySet().iterator();
+        while (entries.hasNext()) {
+            Map.Entry<UUID, PlayerData> entry = entries.next();
+            entry.getValue().clearTasks();
+            entries.remove();
         }
     }
 
+    /**
+     * Remove the given Announcement ID from the data of all players.
+     *
+     * @param id The Announcement ID.
+     */
     public void removeReadAnnouncement(int id){
         FileConfiguration file = loadDataFile();
         for(String uuid : file.getKeys(false)) {
@@ -91,6 +146,11 @@ public class PlayerDataHandler {
         }
     }
 
+    /**
+     * Loads the data.yml file that contains the read announcement data.
+     *
+     * @return The FileConfiguration of the data file.
+     */
     private FileConfiguration loadDataFile(){
         File file = new File(plugin.getDataFolder() + File.separator + "data.yml");
         if(!file.exists()){
@@ -104,6 +164,12 @@ public class PlayerDataHandler {
         return YamlConfiguration.loadConfiguration(file);
     }
 
+    /**
+     * Saves the read announcements of the given player.
+     *
+     * @param uuid The UUID of the player.
+     * @param list The list containing Announcement ID's.
+     */
     public void saveReadAnnouncements(UUID uuid, List<Integer> list){
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
             FileConfiguration file = loadDataFile();
@@ -117,6 +183,11 @@ public class PlayerDataHandler {
         });
     }
 
+    /**
+     * Marks all the available announcements of the player as read.
+     *
+     * @param player The player.
+     */
     public void setReadAnnouncements(Player player){
         UUID uuid = player.getUniqueId();
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {

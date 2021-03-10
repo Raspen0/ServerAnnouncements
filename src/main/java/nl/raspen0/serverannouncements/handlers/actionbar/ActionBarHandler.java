@@ -4,6 +4,7 @@ import nl.raspen0.serverannouncements.ServerAnnouncements;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
 
@@ -60,9 +61,11 @@ public abstract class ActionBarHandler {
     }
 
     public void unloadPlayers(){
-        for(Map.Entry e : playerMap.entrySet()){
-            UUID uuid = (UUID) e.getKey();
-            unloadPlayer(uuid);
+        Iterator<Map.Entry<UUID, ActionBarData>> entries = playerMap.entrySet().iterator();
+        while (entries.hasNext()) {
+            Map.Entry<UUID, ActionBarData> entry = entries.next();
+            entry.getValue().cancelTask();
+            entries.remove();
         }
     }
 

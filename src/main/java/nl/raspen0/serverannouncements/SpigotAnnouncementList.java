@@ -1,6 +1,5 @@
 package nl.raspen0.serverannouncements;
 
-import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import nl.raspen0.serverannouncements.events.AnnouncementsSendEvent;
 import org.bukkit.Bukkit;
@@ -11,7 +10,7 @@ import java.util.Map;
 
 public class SpigotAnnouncementList implements AnnouncementList{
 
-    private Map<Integer, BaseComponent[]> map;
+    private final Map<Integer, TextComponent> map;
     private boolean nextPage = false;
     private int pageSize;
 
@@ -36,14 +35,8 @@ public class SpigotAnnouncementList implements AnnouncementList{
     }
 
     @Override
-    public boolean addAnnouncement(Object announcement, int annCount) {
-        if(announcement instanceof TextComponent){
-            map.put(annCount, new BaseComponent[]{(TextComponent) announcement});
-
-        } else if(announcement instanceof String){
-            String ann = (String) announcement;
-            map.put(annCount, TextComponent.fromLegacyText(ann));
-        }
+    public boolean addAnnouncement(TextComponent announcement, int annCount) {
+        map.put(annCount, announcement);
         return isFull();
     }
 
@@ -54,10 +47,11 @@ public class SpigotAnnouncementList implements AnnouncementList{
 
     @Override
     public void sendAnnouncements(Player player) {
+        System.out.println("Sending announcements");
         AnnouncementsSendEvent event = new AnnouncementsSendEvent(player);
         Bukkit.getServer().getPluginManager().callEvent(event);
         if(!event.isCancelled()) {
-            for (int i = 1; i < map.size() + 1; i++) {
+            for (int i = 0; i < map.size(); i++) {
                 player.spigot().sendMessage(map.get(i));
             }
         }
