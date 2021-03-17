@@ -137,4 +137,13 @@ public class ServerAnnouncements extends JavaPlugin {
             return  false;
         }
     }
+
+    public boolean isPaper(){
+        try {
+            Class.forName("com.destroystokyo.paper.PaperConfig");
+            return true;
+        } catch (Throwable tr) {
+            return  false;
+        }
+    }
 }

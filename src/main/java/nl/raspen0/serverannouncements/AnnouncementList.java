@@ -1,20 +1,36 @@
 package nl.raspen0.serverannouncements;
 
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.entity.Player;
 
-public interface AnnouncementList {
+public abstract class AnnouncementList {
 
-    boolean addAnnouncement(TextComponent announcement, int annCount);
+    protected boolean nextPage = false;
+    protected int pageSize;
 
-    boolean isFull();
+    public AnnouncementList(int pageSize){
+        this.pageSize = pageSize;
+    }
 
-    void sendAnnouncements(Player player);
+    public boolean addAnnouncement(String announcement,  int annCount, ServerAnnouncements plugin){
+        return addAnnouncement(announcement, annCount, plugin, null);
+    }
 
-    void setTotal(int annTotal);
+    public abstract boolean addAnnouncement(String announcement, int annCount, ServerAnnouncements plugin, String date);
 
-    void setNextPage();
+    public abstract void sendAnnouncements(Player player);
 
-    boolean hasNextPage();
+    public abstract void sendNextPageMessage(Player player, String[] localizedMessages, String nextPage);
+
+    public void setTotal(int annTotal) {
+        this.pageSize = annTotal;
+    }
+
+    public void setNextPage() {
+        this.nextPage = true;
+    }
+
+    public boolean hasNextPage() {
+        return nextPage;
+    }
+
 }
