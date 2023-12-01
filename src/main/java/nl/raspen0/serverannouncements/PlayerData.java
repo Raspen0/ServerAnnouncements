@@ -1,46 +1,35 @@
 package nl.raspen0.serverannouncements;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Bukkit;
 
 import java.util.List;
 
 public class PlayerData {
 
+    @Setter
     private List<Integer> tasks;
+    @Getter @Setter
     private List<Integer> readAnnouncements;
-    private int count;
+    @Getter
+    private int unreadCount;
 
     public PlayerData(List<Integer> readAnnouncements, int count){
         this.readAnnouncements = readAnnouncements;
-        this.count = count;
-    }
-
-    public int getUnreadCount() {
-        return count;
+        this.unreadCount = count;
     }
 
     public void increaseUnreadCount(){
-        count++;
+        unreadCount++;
     }
 
     public void decreaseUnreadCount(){
-        count--;
-    }
-
-    public List<Integer> getReadAnnouncements() {
-        return readAnnouncements;
-    }
-
-    public void setReadAnnouncement(List<Integer> list){
-        readAnnouncements = list;
+        unreadCount--;
     }
 
     public void removeReadAnnouncement(int id){
         readAnnouncements.remove(Integer.valueOf(id));
-    }
-
-    public void setTasks(List<Integer> list){
-        tasks = list;
     }
 
     public void clearTasks(){

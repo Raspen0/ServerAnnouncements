@@ -1,10 +1,6 @@
 package nl.raspen0.serverannouncements.handlers.announcement;
 
-import me.clip.placeholderapi.PlaceholderAPI;
-import nl.raspen0.serverannouncements.AnnouncementList;
-import nl.raspen0.serverannouncements.PaperAnnouncementList;
-import nl.raspen0.serverannouncements.ServerAnnouncements;
-import nl.raspen0.serverannouncements.SpigotAnnouncementList;
+import nl.raspen0.serverannouncements.*;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -26,7 +22,7 @@ public class AnnouncementListHandler {
         //(ID, Announcement)
         Map<Integer, Announcement> map = plugin.getAnnouncementHandler().getAnnouncements();
 
-        if(plugin.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")){
+      /*  if(plugin.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")){
             System.out.println("Using PlaceholderAPI");
             for(Map.Entry<Integer, Announcement> e : map.entrySet()){
                 if(read.contains(e.getKey()) && !e.getValue().hasPermission(player)){
@@ -38,6 +34,8 @@ public class AnnouncementListHandler {
                 e.setValue(ann);
             }
         }
+
+       */
 
         //Async
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
@@ -53,12 +51,7 @@ public class AnnouncementListHandler {
 
             //Index to stop the loop at.
             //final int maxAnnCount = pageSize + 1;
-            AnnouncementList annList;
-            if (plugin.isPaper()) {
-                annList = new PaperAnnouncementList(pageSize);
-            } else {
-                annList = new SpigotAnnouncementList(pageSize);
-            }
+            AnnouncementList annList = new AnnouncementList(pageSize);
 
             int mapPos = start;
             //The current number of announcements.
@@ -91,11 +84,12 @@ public class AnnouncementListHandler {
 
                 plugin.getPluginLogger().logDebug("ID: " + annID + " passed check!");
 
-                String date = ann.getDate(plugin.getLangHandler().getMessage(player, "locale"));
-                String message = "- " + ann.getText();
+                //TODO: Move locale outside of message list.
+                String date = ann.getDate(String.valueOf(plugin.getLangHandler().getMessage(player, "locale")));
 
                 System.out.println("Adding announcement: " + annID);
-                if(annList.addAnnouncement(message, annCount, plugin, date)){
+                annList.addAnnouncement(ann.getText(), annCount, plugin, player, date);
+                if(annCount == pageSize){
                     System.out.println("Full list count" + (annCount + 1) + ".");
                     break;
                 }
@@ -106,7 +100,7 @@ public class AnnouncementListHandler {
 
             if(annCount == 0) {
                 System.out.println("Page to high 2");
-                player.sendMessage(plugin.getLangHandler().getMessage(player, "announcePageTooHigh"));
+                MessageUtils.sendLocalisedMessage("announcePageTooHigh", player, plugin);
                 return;
             }
 
@@ -116,12 +110,12 @@ public class AnnouncementListHandler {
 
             //Send the list on the main thread.
             plugin.getServer().getScheduler().runTask(plugin, () -> {
-                player.sendMessage(plugin.getLangHandler().getMessage(player, "announceHeader"));
+                MessageUtils.sendLocalisedMessage("announceHeader", player, plugin);
                 annList.sendAnnouncements(player);
                 if (annList.hasNextPage()) {
-                    annList.sendNextPageMessage(player, plugin.getLangHandler().getMessage(player, "announceNextPage").split("\\s.0.\\s"), String.valueOf(page + 1));
+                    MessageUtils.sendNextPageMessage(page + 1, player, plugin);
                 }
-                player.sendMessage(plugin.getLangHandler().getMessage(player, "announceFooter"));
+                MessageUtils.sendLocalisedMessage("announceFooter", player, plugin);
             });
         });
     }

@@ -1,5 +1,23 @@
-message1:
-  text: Example Message
+# ID, should be unique.
+#TODO: Look into removing id numbers.
+example:
+  # The text of the announcement.
+  # Uses the MiniMessage format (https://docs.advntr.dev/minimessage/format.html).
+  text: <red>Hello</red> <bold><blue>World</blue></bold>!
   id: 1
-  permission: example.permission
-  date: 20-01-18
+  # Required permission to read the announcement, remove # to enable.
+  #permission: example.permission
+  # The date of the announcement (dd-mm-yy).
+  date: 30-11-23
+click_hover_example:
+  text: <hover:show_text:'<red>Click me!'><click:run_command:/list>Click</click></hover> to run /list.
+  id: 2
+  date: 30-11-23
+url_example:
+  text: <click:open_url:https://spigotmc.org><blue><underlined>Click</underlined></blue></click> to open SpigotMC.
+  id: 3
+  date: 30-11-23
+placeholderapi_example: #This example will only work if you have the PlaceholderAPI plugin installed.
+  text: Hello <papi:player_name>, there are currently <papi:server_online> players online.
+  id: 4
+  date: 30-11-23

@@ -1,5 +1,6 @@
 package nl.raspen0.serverannouncements.commands.admin;
 
+import nl.raspen0.serverannouncements.MessageUtils;
 import nl.raspen0.serverannouncements.PlayerData;
 import nl.raspen0.serverannouncements.ServerAnnouncements;
 import org.bukkit.Bukkit;
@@ -14,12 +15,12 @@ public class ShowPlayerInfo implements AdminCommand{
     @Override
     public void runCommand(CommandSender sender, String[] args, ServerAnnouncements plugin) {
         if(!sender.hasPermission("serverann.admin.info")){
-            sender.sendMessage(plugin.getLangHandler().getMessage(sender, "noPerm"));
+            MessageUtils.sendLocalisedMessage("noPerm", sender, plugin);
             return;
         }
         if (args.length < 3) {
             //Not enough args
-            sender.sendMessage(plugin.getLangHandler().getMessage(sender, "notEnoughArgs"));
+            MessageUtils.sendLocalisedMessage("notEnoughArgs", sender, plugin);
             return;
         }
         PlayerData data;

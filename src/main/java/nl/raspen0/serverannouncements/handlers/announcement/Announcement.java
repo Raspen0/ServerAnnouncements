@@ -1,59 +1,45 @@
 package nl.raspen0.serverannouncements.handlers.announcement;
 
+import lombok.Getter;
 import org.bukkit.entity.Player;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
+@Getter
 public class Announcement {
 
     private String text;
     private final String permission;
     private final String title;
-    private final LocalDate date;
+    private final LocalDate rawDate;
 
     Announcement(AnnouncementBuilder builder) {
         this.text = builder.text;
         this.permission = builder.permission;
         this.title = builder.title;
-        this.date = builder.date;
+        this.rawDate = builder.date;
     }
 
     public Announcement(String text, String title, LocalDate date, String permission) {
         this.text = text;
         this.permission = permission;
         this.title = title;
-        this.date = date;
+        this.rawDate = date;
     }
 
-    public String getTitle() {
-        return title;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void updateText(String text){
+    public void setText(String text) {
         this.text = text;
-    }
-
-    String getPermission() {
-        return permission;
-    }
-
-    LocalDate getRawDate(){
-        return date;
     }
 
     public String getDate(String locale) {
         String pattern = "dd-MMM";
-        if(date.getYear() != LocalDate.now().getYear()){
+        if(rawDate.getYear() != LocalDate.now().getYear()){
             pattern = "dd-MMM-yyyy";
         }
         DateTimeFormatter format = DateTimeFormatter.ofPattern(pattern).withLocale(new Locale(locale));
-        return date.format(format);
+        return rawDate.format(format);
     }
 
     public boolean hasPermission(Player player) {

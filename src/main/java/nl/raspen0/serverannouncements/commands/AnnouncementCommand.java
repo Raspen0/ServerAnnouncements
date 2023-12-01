@@ -1,5 +1,6 @@
 package nl.raspen0.serverannouncements.commands;
 
+import nl.raspen0.serverannouncements.MessageUtils;
 import nl.raspen0.serverannouncements.ServerAnnouncements;
 import nl.raspen0.serverannouncements.commands.admin.*;
 import nl.raspen0.serverannouncements.handlers.announcement.AnnouncementListHandler;
@@ -20,22 +21,21 @@ public class AnnouncementCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (cmd.getName().equalsIgnoreCase("announcements")) {
             if (!(sender instanceof Player)) {
-                sender.sendMessage(plugin.getLangHandler().getMessage(sender, "onlyPlayer"));
+                MessageUtils.sendLocalisedMessage("onlyPlayer", sender, plugin);
                 return true;
             }
 
             Player player = (Player) sender;
 
             String arg = args.length > 0 ? args[0] : "1";
-            System.out.println("arg: " + arg);
             try {
                 int page = Integer.parseInt(arg);
                 if (!sender.hasPermission("serverann.view")) {
-                    sender.sendMessage(plugin.getLangHandler().getMessage(sender, "noPerm"));
+                    MessageUtils.sendLocalisedMessage("noPerm", sender, plugin);
                     return true;
                 }
                 if (!plugin.getPlayerHandler().hasUnreadAnnouncements(player.getUniqueId())) {
-                    player.sendMessage(plugin.getLangHandler().getMessage(player, "announceEmpty"));
+                    MessageUtils.sendLocalisedMessage("announceEmpty", sender, plugin);
                     return true;
                 }
 
@@ -60,37 +60,37 @@ public class AnnouncementCommand implements CommandExecutor {
 
     private void adminCommand(CommandSender sender, String[] args) {
         if (!sender.hasPermission("serverann.admin")) {
-            sender.sendMessage(plugin.getLangHandler().getMessage(sender, "noPerm"));
+            MessageUtils.sendLocalisedMessage("noPerm", sender, plugin);
             return;
         }
         if (args.length < 2) {
-            sender.sendMessage(plugin.getLangHandler().getMessage(sender, "notEnoughArgs"));
+            MessageUtils.sendLocalisedMessage("notEnoughArgs", sender, plugin);
             return;
         }
         try {
             adminCommandList.valueOf(args[1].toUpperCase()).adminCommand.runCommand(sender, args, plugin);
         } catch (IllegalArgumentException e) {
-            sender.sendMessage(plugin.getLangHandler().getMessage(sender, "adminInvalidArg"));
+            MessageUtils.sendLocalisedMessage("adminInvalidArg", sender, plugin);
         }
     }
 
     private void markRead(CommandSender sender) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(plugin.getLangHandler().getMessage(sender, "onlyPlayer"));
+            MessageUtils.sendLocalisedMessage("onlyPlayer", sender, plugin);
             return;
         }
         if (!sender.hasPermission("serverann.read")) {
-            sender.sendMessage(plugin.getLangHandler().getMessage(sender, "noPerm"));
+            MessageUtils.sendLocalisedMessage("noPerm", sender, plugin);
             return;
         }
 
         Player player = (Player) sender;
         if (!plugin.getPlayerHandler().hasUnreadAnnouncements(player.getUniqueId())) {
-            sender.sendMessage(plugin.getLangHandler().getMessage(sender, "announceAlreadyRead"));
+            MessageUtils.sendLocalisedMessage("announceAlreadyRead", sender, plugin);
             return;
         }
         plugin.getPlayerHandler().setReadAnnouncements(player);
-        player.sendMessage(plugin.getLangHandler().getMessage(player, "announceClear"));
+        MessageUtils.sendLocalisedMessage("announceClear", sender, plugin);
     }
 
     @SuppressWarnings("unused")
@@ -116,18 +116,18 @@ class AnnouncementDelete implements AdminCommand {
     @Override
     public void runCommand(CommandSender sender, String[] args, ServerAnnouncements plugin) {
         if (!sender.hasPermission("serverann.admin.delete")) {
-            sender.sendMessage(plugin.getLangHandler().getMessage(sender, "noPerm"));
+            MessageUtils.sendLocalisedMessage("noPerm", sender, plugin);
             return;
         }
         if(args.length < 3){
-            sender.sendMessage(plugin.getLangHandler().getMessage(sender, "notEnoughArgs"));
+            MessageUtils.sendLocalisedMessage("notEnoughArgs", sender, plugin);
             return;
         }
         if(!plugin.getAnnouncementHandler().isAnnouncementLoaded(args[2])){
-            sender.sendMessage(plugin.getLangHandler().getMessage(sender, "deleteInvalidTitle"));
+            MessageUtils.sendLocalisedMessage("deleteInvalidTitle", sender, plugin);
             return;
         }
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> plugin.getAnnouncementHandler().deleteAnnouncement(args[2]));
-        sender.sendMessage(plugin.getLangHandler().getMessage(sender, "adminDeleted"));
+        MessageUtils.sendLocalisedMessage("adminDeleted", sender, plugin);
     }
 }

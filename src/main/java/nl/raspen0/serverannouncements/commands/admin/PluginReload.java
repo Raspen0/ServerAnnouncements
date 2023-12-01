@@ -1,5 +1,6 @@
 package nl.raspen0.serverannouncements.commands.admin;
 
+import nl.raspen0.serverannouncements.MessageUtils;
 import nl.raspen0.serverannouncements.PlayerData;
 import nl.raspen0.serverannouncements.ServerAnnouncements;
 import nl.raspen0.serverannouncements.handlers.TaskHandler;
@@ -11,7 +12,7 @@ public class PluginReload implements AdminCommand{
     @Override
     public void runCommand(CommandSender sender, String[] args, ServerAnnouncements plugin) {
         if(!sender.hasPermission("serverann.admin.reload")){
-            sender.sendMessage(plugin.getLangHandler().getMessage(sender, "noPerm"));
+            MessageUtils.sendLocalisedMessage("noPerm", sender, plugin);
             return;
         }
         plugin.loadConfig();
@@ -30,6 +31,6 @@ public class PluginReload implements AdminCommand{
                 new TaskHandler().startTasks(player, data, plugin);
             });
         }
-        sender.sendMessage(plugin.getLangHandler().getMessage(sender, "announceReloaded"));
+        MessageUtils.sendLocalisedMessage("announceReloaded", sender, plugin);
     }
 }

@@ -1,5 +1,10 @@
 package nl.raspen0.serverannouncements.commands.admin;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextReplacementConfig;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import nl.raspen0.serverannouncements.MessageUtils;
 import nl.raspen0.serverannouncements.PlayerData;
 import nl.raspen0.serverannouncements.ServerAnnouncements;
 import nl.raspen0.serverannouncements.handlers.TaskHandler;
@@ -19,19 +24,16 @@ public class AnnouncementModify implements AdminCommand{
     @Override
     public void runCommand(CommandSender sender, String[] args, ServerAnnouncements plugin) {
         if(!sender.hasPermission("serverann.admin.modify")){
-            sender.sendMessage(plugin.getLangHandler().getMessage(sender, "noPerm"));
+            MessageUtils.sendLocalisedMessage("noPerm", sender, plugin);
             return;
         }
         if (args.length < 4) {
-            sender.sendMessage(plugin.getLangHandler().getMessage(sender, "notEnoughArgs"));
+            MessageUtils.sendLocalisedMessage("notEnoughArgs", sender, plugin);
             return;
         }
         String change = args[2].toLowerCase();
         if (!change.equals("text") && !change.equals("permission") && !change.equals("title")) {
-            ChatColor YELLOW = ChatColor.YELLOW;
-            ChatColor RED = ChatColor.RED;
-            sender.sendMessage(plugin.getLangHandler().getMessage(sender, "adminValidArgs") + YELLOW + "text" + RED +
-                    ", " + YELLOW + "title" + RED + ", " + "permission" + RED + ".");
+            MessageUtils.sendLocalisedMessage("adminValidArgs", sender, plugin);
             return;
         }
         String title = args[3];
@@ -47,7 +49,7 @@ public class AnnouncementModify implements AdminCommand{
         String text = file.getString(title + ".text");
         final String oldTitle = title;
         if(text == null){
-            sender.sendMessage(plugin.getLangHandler().getMessage(sender, "adminInvalidAnnouncement"));
+            MessageUtils.sendLocalisedMessage("adminInvalidAnnouncement", sender, plugin);
             return;
         }
         String permission = file.getString(title + ".permission");
@@ -58,7 +60,7 @@ public class AnnouncementModify implements AdminCommand{
 
         if(change.equals("text")){
             if(!sender.hasPermission("serverann.admin.modify.text")){
-                sender.sendMessage(plugin.getLangHandler().getMessage(sender, "noPerm"));
+                MessageUtils.sendLocalisedMessage("noPerm", sender, plugin);
                 return;
             }
             file.set(title + "." + change, value);
@@ -66,7 +68,7 @@ public class AnnouncementModify implements AdminCommand{
         }
         if(change.equals("permission")){
             if(!sender.hasPermission("serverann.admin.modify.permission")){
-                sender.sendMessage(plugin.getLangHandler().getMessage(sender, "noPerm"));
+                MessageUtils.sendLocalisedMessage("noPerm", sender, plugin);
                 return;
             }
             if(value.equals("none")) {
@@ -78,7 +80,7 @@ public class AnnouncementModify implements AdminCommand{
         }
         if(change.equals("title")){
             if(!sender.hasPermission("serverann.admin.modify.title")){
-                sender.sendMessage(plugin.getLangHandler().getMessage(sender, "noPerm"));
+                MessageUtils.sendLocalisedMessage("noPerm", sender, plugin);
                 return;
             }
             plugin.getAnnouncementHandler().unloadAnnouncement(title);
@@ -91,15 +93,17 @@ public class AnnouncementModify implements AdminCommand{
             }
             title = value;
         }
-        plugin.getAnnouncementHandler().addAnnounement(title, id, new Announcement(ChatColor.translateAlternateColorCodes('&', text), title, date, permission));
+        plugin.getAnnouncementHandler().addAnnounement(title, id, new Announcement(
+                text, title, date, permission));
         try {
             file.save(new File(plugin.getDataFolder() + File.separator + "announcements.yml"));
         } catch (IOException e) {
             plugin.getPluginLogger().logError("Could not save announcements to file!");
             e.printStackTrace();
         }
-        sender.sendMessage(plugin.getLangHandler().getMessage(sender, "adminModified").replace("{0}", change)
-                .replace("{1}", oldTitle));
+        MessageUtils.sendMessage(plugin.getLangHandler().getMessage(sender, "adminModified")
+                .replaceText(TextReplacementConfig.builder().matchLiteral("{0}").replacement(change).build())
+                .replaceText(TextReplacementConfig.builder().matchLiteral("{1}").replacement(oldTitle).build()), sender);
     }
 
     private void updatePlayerCounts(String permission, String value, ServerAnnouncements plugin){

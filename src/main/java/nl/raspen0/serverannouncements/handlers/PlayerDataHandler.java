@@ -1,5 +1,6 @@
 package nl.raspen0.serverannouncements.handlers;
 
+import lombok.Getter;
 import nl.raspen0.serverannouncements.PlayerData;
 import nl.raspen0.serverannouncements.ServerAnnouncements;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -13,6 +14,7 @@ import java.util.*;
 public class PlayerDataHandler {
 
     //Players are only added to the map if they have unread announcements.
+    @Getter
     private final Map<UUID, PlayerData> players = new HashMap<>();
     private final ServerAnnouncements plugin;
 
@@ -50,13 +52,6 @@ public class PlayerDataHandler {
      */
     void addPlayer(UUID uuid, PlayerData data){
         players.put(uuid, data);
-    }
-
-    /**
-     * Returns the PlayerData map.
-     */
-    public Map<UUID, PlayerData> getPlayers(){
-        return players;
     }
 
     /**

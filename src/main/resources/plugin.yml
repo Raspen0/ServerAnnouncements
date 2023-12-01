@@ -1,13 +1,12 @@
 name: ServerAnnouncements
 author: raspen0
-description: A Bukkit/Spigot plugin that allows server owners to display server announcements to players.
+description: A Spigot/Paper plugin that allows server owners to display server announcements to players.
 main: nl.raspen0.serverannouncements.ServerAnnouncements
 version: ${project.version}
-softdepend: [PlaceholderAPI, ProtocolLib]
-api-version: 1.13
+softdepend: [PlaceholderAPI]
 commands:
    announcements:
-      description: Announcements command
+      description: Announcements command.
       aliases: ann
       usage: /announcements {read/admin}
 permissions:
@@ -18,13 +17,13 @@ permissions:
       description: Allows you to mark Announcements as read.
       default: true
    serverann.notification.chat:
-      description: Allows you to recieve Announcement notifications in chat.
+      description: Allows you to receive Announcement notifications in chat.
       default: true
    serverann.notification.actionbar:
-      description: Allows you to recieve Announcement notifications in the ActionBar.
+      description: Allows you to receive Announcement notifications in the ActionBar.
       default: true
    serverann.notification.bossbar:
-      description: Allows you to recieve Announcement notifications in the BossBar.
+      description: Allows you to receive Announcement notifications in the BossBar.
       default: true
    serverann.lang.*:
       description: Language permissions

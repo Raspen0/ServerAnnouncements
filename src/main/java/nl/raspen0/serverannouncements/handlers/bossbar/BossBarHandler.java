@@ -1,13 +1,15 @@
 package nl.raspen0.serverannouncements.handlers.bossbar;
 
-import nl.raspen0.serverannouncements.events.NoticeType;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextReplacementConfig;
+import net.kyori.adventure.text.format.NamedTextColor;
 import nl.raspen0.serverannouncements.ServerAnnouncements;
 import nl.raspen0.serverannouncements.events.NoticeSendEvent;
+import nl.raspen0.serverannouncements.events.NoticeType;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.boss.BarColor;
-import org.bukkit.boss.BarStyle;
-import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
@@ -20,7 +22,7 @@ public class BossBarHandler {
     private final int delay;
     private final int repeat;
     private final int duration;
-    private final BarColor color;
+    private final BossBar.Color color;
     private Map<UUID, BossBarTask> playerMap;
 
     public BossBarHandler(ServerAnnouncements plugin) {
@@ -29,7 +31,7 @@ public class BossBarHandler {
         delay = plugin.getConfig().getInt("notification.bossbar.delay");
         repeat = plugin.getConfig().getInt("notification.bossbar.repeat");
         duration = plugin.getConfig().getInt("notification.bossbar.duration");
-        color = BarColor.valueOf(plugin.getConfig().getString("notification.bossbar.color").toUpperCase());
+        color = BossBar.Color.valueOf(plugin.getConfig().getString("notification.bossbar.color").toUpperCase());
     }
 
     public int startBossBarTask(Player player) {
@@ -62,20 +64,23 @@ public class BossBarHandler {
             plugin.getServer().getConsoleSender().sendMessage(ChatColor.RED + "Please increase the delay between repeating of the task or decrease the duration of the task!");
             return;
         }
-        BossBar bar = Bukkit.createBossBar(plugin.getLangHandler().getMessage(player, "noticeBossBar").replace("{0}",
-                String.valueOf(event.getUnreadCount())), color, BarStyle.SEGMENTED_10);
-        bar.addPlayer(player);
+
+        Component message = plugin.getLangHandler().getMessage(player, "noticeBossBar")
+                .replaceText(TextReplacementConfig.builder().matchLiteral("{0}").replacement(String.valueOf(event.getUnreadCount())).build());
+        BossBar bar = BossBar.bossBar(message, 1, color, BossBar.Overlay.NOTCHED_10);
+        Audience audience = ServerAnnouncements.getAudiences().player(player);
+        audience.showBossBar(bar);
         int timerDuration = duration / 10;
         playerMap.put(player.getUniqueId(), new BossBarTask(plugin.getServer().getScheduler().runTaskTimer(plugin, () -> {
-            if (bar.getProgress() < 0.1) {
-                bar.setProgress(0.0);
+            if (bar.progress() < 0.1F) {
+                bar.progress(0.0F);
                 playerMap.get(player.getUniqueId()).clearBossbarTask();
                 playerMap.remove(player.getUniqueId());
                 //Half the first and last segment so the bossbar doesn't stay on screen an extra second.
-                plugin.getServer().getScheduler().runTaskLater(plugin, () -> bar.removePlayer(player), 10 * timerDuration);
+                plugin.getServer().getScheduler().runTaskLater(plugin, () -> audience.hideBossBar(bar), 10 * timerDuration);
                 return;
             }
-            bar.setProgress(bar.getProgress() - 0.1);
+            bar.progress(bar.progress() - 0.1F);
         }, 10 * timerDuration, 20 * timerDuration).getTaskId(), bar));
     }
 
@@ -89,8 +94,8 @@ public class BossBarHandler {
     }
 
     public void unloadPlayers(){
-        for(Map.Entry e : playerMap.entrySet()){
-            UUID uuid = (UUID) e.getKey();
+        for(Map.Entry<UUID, BossBarTask> e : playerMap.entrySet()){
+            UUID uuid = e.getKey();
             unloadPlayer(Bukkit.getPlayer(uuid));
         }
     }

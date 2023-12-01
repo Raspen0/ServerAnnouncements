@@ -1,7 +1,9 @@
 package nl.raspen0.serverannouncements.handlers.announcement;
 
+import net.kyori.adventure.text.Component;
 import nl.raspen0.serverannouncements.PlayerData;
 import nl.raspen0.serverannouncements.ServerAnnouncements;
+import nl.raspen0.serverannouncements.MessageUtils;
 import nl.raspen0.serverannouncements.handlers.TaskHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -155,12 +157,16 @@ public class AnnouncementHandler {
         FileConfiguration config = getAnnouncementsFile();
         for(String s : config.getKeys(false)){
             try {
-                String text = config.getString(s + ".text");
+                String message = config.getString(s + ".text", "");
+                if(message.isEmpty()){
+                    continue;
+                }
+
                 int id = config.getInt(s + ".id");
                 DateTimeFormatter format = DateTimeFormatter.ofPattern("dd-MM-yy");
                 LocalDate date = LocalDate.parse(config.getString(s + ".date"), format);
                 String permission = config.getString(s + ".permission");
-                if(announcements.put(id, new Announcement(text, s, date, permission)) != null){
+                if(announcements.put(id, new Announcement(message, s, date, permission)) != null){
                     plugin.getPluginLogger().logError("The messageID of message" + s + " is conflicting with another message, please check announcements.yml!");
                     continue;
                 }

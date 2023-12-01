@@ -1,18 +1,17 @@
 package nl.raspen0.serverannouncements;
 
+import lombok.Getter;
+import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import nl.raspen0.serverannouncements.commands.AnnTabComplete;
 import nl.raspen0.serverannouncements.commands.AnnouncementCommand;
 import nl.raspen0.serverannouncements.handlers.LangHandler;
 import nl.raspen0.serverannouncements.handlers.PlayerDataHandler;
 import nl.raspen0.serverannouncements.handlers.PlayerEventHandler;
 import nl.raspen0.serverannouncements.handlers.actionbar.ActionBarHandler;
-import nl.raspen0.serverannouncements.handlers.actionbar.BukkitActionBarHandler;
-import nl.raspen0.serverannouncements.handlers.actionbar.SpigotActionBarHandler;
 import nl.raspen0.serverannouncements.handlers.announcement.AnnouncementHandler;
 import nl.raspen0.serverannouncements.handlers.announcement.MessageCreator;
 import nl.raspen0.serverannouncements.handlers.bossbar.BossBarHandler;
 import nl.raspen0.serverannouncements.handlers.chat.ChatHandler;
-import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class ServerAnnouncements extends JavaPlugin {
@@ -28,16 +27,22 @@ public class ServerAnnouncements extends JavaPlugin {
     private ActionBarHandler actionBarHandler;
     private BossBarHandler bossBarHandler;
 
+    private boolean useAdventureAPI;
+
+    @Getter
+    private static BukkitAudiences audiences;
+
     @Override
     public void onEnable(){
-        if(!isSpigot()){
-            getServer().getConsoleSender().sendMessage(ChatColor.RED + "Unsupported server implementation, please use Spigot or a fork based on it.");
-            getPluginLoader().disablePlugin(this);
-            return;
-        }
+//        if(!isSpigot()){
+//            getServer().getConsoleSender().sendMessage(ChatColor.RED + "Unsupported server implementation, please use Spigot or a fork based on it.");
+//            Bukkit.getPluginManager().disablePlugin(this);
+//            return;
+//        }
         saveDefaultConfig();
         loadConfig();
         logger = new Logger(this);
+        audiences = BukkitAudiences.create(this);
         langHandler = new LangHandler(this);
         announcementHandler = new AnnouncementHandler(this);
         loadHandlers();
@@ -61,6 +66,10 @@ public class ServerAnnouncements extends JavaPlugin {
             getBossBarHandler().unloadPlayers();
         }
         getLangHandler().unloadMessages();
+        if(this.audiences != null) {
+            this.audiences.close();
+            this.audiences = null;
+        }
     }
 
     public Logger getPluginLogger() {
@@ -113,6 +122,16 @@ public class ServerAnnouncements extends JavaPlugin {
 
     public void loadConfig(){
         config = new Config(getConfig());
+        if(config.useAdventureAPI()){
+            //TODO: Add console messages.
+            useAdventureAPI = isPaper();
+        } else {
+            useAdventureAPI = false;
+        }
+    }
+
+    public boolean useAdventureAPI() {
+        return useAdventureAPI;
     }
 
     private void loadHandlers(){
@@ -125,7 +144,7 @@ public class ServerAnnouncements extends JavaPlugin {
             chatHandler = new ChatHandler(this);
         }
         if(getConfig().getBoolean("notification.actionbar.enabled")) {
-            actionBarHandler = new SpigotActionBarHandler(this);
+            actionBarHandler = new ActionBarHandler(this);
         }
     }
 

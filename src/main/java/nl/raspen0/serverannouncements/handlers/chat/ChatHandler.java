@@ -1,5 +1,7 @@
 package nl.raspen0.serverannouncements.handlers.chat;
 
+import net.kyori.adventure.text.TextReplacementConfig;
+import nl.raspen0.serverannouncements.MessageUtils;
 import nl.raspen0.serverannouncements.events.NoticeType;
 import nl.raspen0.serverannouncements.ServerAnnouncements;
 import nl.raspen0.serverannouncements.events.NoticeSendEvent;
@@ -32,7 +34,9 @@ public class ChatHandler {
         NoticeSendEvent event = new NoticeSendEvent(player, plugin.getPlayerHandler().getPlayer(player.getUniqueId()).getUnreadCount(), NoticeType.CHAT);
         Bukkit.getServer().getPluginManager().callEvent(event);
         if(!event.isCancelled()) {
-            player.sendMessage(plugin.getLangHandler().getMessage(player, "noticeChat").replace("{0}", String.valueOf(event.getUnreadCount())));
+            MessageUtils.sendMessage(plugin.getLangHandler().getMessage(player, "noticeChat")
+                    .replaceText(TextReplacementConfig.builder().matchLiteral("{0}").replacement(String.valueOf(event.getUnreadCount())).build()),
+                    player);
         }
     }
 }

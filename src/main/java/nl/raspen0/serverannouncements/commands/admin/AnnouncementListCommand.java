@@ -1,5 +1,6 @@
 package nl.raspen0.serverannouncements.commands.admin;
 
+import nl.raspen0.serverannouncements.MessageUtils;
 import nl.raspen0.serverannouncements.ServerAnnouncements;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -11,7 +12,7 @@ public class AnnouncementListCommand implements AdminCommand {
     @Override
     public void runCommand(CommandSender sender, String[] args, ServerAnnouncements plugin) {
         if (!sender.hasPermission("serverann.admin.list")) {
-            sender.sendMessage(plugin.getLangHandler().getMessage(sender, "noPerm"));
+            MessageUtils.sendLocalisedMessage("noPerm", sender, plugin);
             return;
         }
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
@@ -28,11 +29,11 @@ public class AnnouncementListCommand implements AdminCommand {
                         .append(id).append(ChatColor.AQUA).append(")");
             }
             if(builder.length() == 0){
-                sender.sendMessage(plugin.getLangHandler().getMessage(sender, "adminListEmpty"));
+                MessageUtils.sendLocalisedMessage("adminListEmpty", sender, plugin);
                 return;
             }
 
-            sender.sendMessage(plugin.getLangHandler().getMessage(sender, "adminList"));
+            MessageUtils.sendLocalisedMessage("adminList", sender, plugin);
             sender.sendMessage(builder.toString());
         });
     }

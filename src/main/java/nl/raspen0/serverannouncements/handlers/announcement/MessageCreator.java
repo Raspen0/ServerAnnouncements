@@ -1,5 +1,6 @@
 package nl.raspen0.serverannouncements.handlers.announcement;
 
+import nl.raspen0.serverannouncements.MessageUtils;
 import nl.raspen0.serverannouncements.PlayerData;
 import nl.raspen0.serverannouncements.ServerAnnouncements;
 import nl.raspen0.serverannouncements.handlers.TaskHandler;
@@ -46,34 +47,35 @@ public class MessageCreator implements Listener {
         }
         event.setCancelled(true);
         Player player = event.getPlayer();
+        //TODO: configurable??
         if(event.getMessage().equals("cancel")){
-            player.sendMessage(plugin.getLangHandler().getMessage(player, "creatorCancelled"));
+            MessageUtils.sendLocalisedMessage("creatorCancelled", player, plugin);
             playerMap.remove(player.getUniqueId());
         }
         switch (playerMap.get(player.getUniqueId()).getState()){
             case TITLE: {
                 if(plugin.getAnnouncementHandler().isAnnouncementLoaded(event.getMessage())){
-                    player.sendMessage(plugin.getLangHandler().getMessage(player, "creatorTitleExists"));
+                    MessageUtils.sendLocalisedMessage("creatorTitleExists", player, plugin);
                     return;
                 }
                 if(event.getMessage().contains(".")){
-                    player.sendMessage(plugin.getLangHandler().getMessage(player, "creatorInvalidCharacter"));
+                    MessageUtils.sendLocalisedMessage("creatorInvalidCharacter", player, plugin);
                     return;
                 }
                 playerMap.get(player.getUniqueId()).setTitle(event.getMessage());
-                player.sendMessage(plugin.getLangHandler().getMessage(player, "creatorText"));
+                MessageUtils.sendLocalisedMessage("creatorText", player, plugin);
                 break;
             }
             case TEXT: {
                 playerMap.get(player.getUniqueId()).setText(event.getMessage());
-                player.sendMessage(plugin.getLangHandler().getMessage(player, "creatorPermission"));
+                MessageUtils.sendLocalisedMessage("creatorPermission", player, plugin);
                 break;
             }
             case PERMISSION: {
                 Announcement.AnnouncementBuilder ann = playerMap.get(player.getUniqueId());
                 String permission = event.getMessage();
                 if(!permission.contains(".") && !permission.equals("none")){
-                    player.sendMessage(plugin.getLangHandler().getMessage(player, "creatorInvalidPermission"));
+                    MessageUtils.sendLocalisedMessage("creatorInvalidPermission", player, plugin);
                     return;
                 }
                 if(!permission.equalsIgnoreCase("none")){
@@ -100,7 +102,7 @@ public class MessageCreator implements Listener {
                         new TaskHandler().reloadPlayer(p, data, plugin);
                     }
                 }
-                player.sendMessage(plugin.getLangHandler().getMessage(player, "creatorFinish"));
+                MessageUtils.sendLocalisedMessage("creatorFinish", player, plugin);
             }
         }
     }
